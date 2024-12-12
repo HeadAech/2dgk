@@ -48,7 +48,7 @@ private:
         std::cout << labIndex << std::endl;
 
         if (maxLevel < labIndex) {
-            Signals::ShowMessage.emit("GG!\nPlayer 1 reached the trapdoor " + std::to_string(stats[0]) + " times. \nPlayer2 reached the trapdoor " + std::to_string(stats[1]) + " times.");
+            Signals::ShowMessage.emit("GG!\nPlayer 0 reached the trapdoor " + std::to_string(stats[0]) + " times. \nPlayer 1 reached the trapdoor " + std::to_string(stats[1]) + " times.");
             labIndex = 1;
             stats[0] = 0;
             stats[1] = 0;
