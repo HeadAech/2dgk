@@ -189,13 +189,15 @@ void Player::update(sf::RenderWindow& window, float delta) {
         acceleration = sf::Vector2f(direction.x, direction.y) * deAcceleration * 0.1f;
     }
 
-    velocity.y += getGravity();
+    velocity.y += getGravity() * delta;
 
-    // velocity += 0.5f * (acceleration + newAcc) * delta;
+    // Air control - reduce horizontal acceleration while in air
+    if (!isOnFloor) {
+        acceleration.x *= 0.5f;  // Reduce air control
+    }
+
+    // Apply horizontal movement
     velocity.x += acceleration.x * speed;
-    velocity.y += acceleration.y;
-
-    // velocity.x = isOnFloor ? slowRate * velocity.x : slowRate / 3 * velocity.x;
     velocity.x = slowRate * velocity.x;
 
     // velocity += acceleration * speed * delta;
@@ -210,11 +212,18 @@ void Player::update(sf::RenderWindow& window, float delta) {
         canDoubleJump = true;
     }
 
-    velocity.x = std::clamp(velocity.x, -maxSpeed, maxSpeed);
-    velocity.y = std::clamp(velocity.y, -620.0f, 1000.0f);
+    if (velocity.x > maxSpeed && isOnFloor) {
+        velocity.x = maxSpeed;
+    }
+
+    if (velocity.x < -maxSpeed && isOnFloor) {
+        velocity.x = -maxSpeed;
+    }
+
+    velocity.y = std::clamp(velocity.y, -1000.0f, 1000.0f);
 
     // std::cout << "delta time: " << delta << std::endl;
-    // std::cout << "velocity: " << velocity.x << ", " << velocity.y << std::endl;
+    std::cout << "velocity: " << velocity.x << ", " << velocity.y << std::endl;
     // std::cout << "Can double jump: " << canDoubleJump << std::endl;
     // std::cout << "acceleration: " << acceleration.x << ", " << acceleration.y << std::endl;
 
@@ -254,10 +263,13 @@ void Player::applyForce(sf::Vector2f force) {
 }
 
 void Player::jump() {
-    float jumpVelocity = ((2.0f * jumpHeight * std::abs(velocity.x)) / jumpDistance) * -1.0f;
-    velocity.y = jumpVelocity;
-    std::cout << "Jumping " << jumpVelocity << std::endl;
-
+    // Apply vertical jump velocity
+    velocity.y = initialJumpVelocity;
+    
+    // Boost horizontal velocity when jumping
+    if (std::abs(velocity.x) > 0.1f) {  // Only boost if already moving horizontally
+        velocity.x *= horizontalJumpBoost;
+    }
 }
 
 float Player::getGravity() {

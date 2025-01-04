@@ -28,7 +28,7 @@ class Player {
 
     const float slowRate = .80f;
 
-    const float maxSpeed = 400.5f * slowRate;
+    const float maxSpeed = 400.5f;
     const float speed = 400.5f;
 
     public:
@@ -46,17 +46,16 @@ class Player {
 
     bool isOnFloor = false;
 
-    //jumping
-    float jumpHeight = 50.0f;
-    float jumpTimeToPeak = 1.8f;
-    float jumpTimeToDescent = 1.5f;
-    float jumpDistance = 1.0f;
+    //jumping parameters
+    const float jumpHeight = 100.0f;  // maximum height in pixels
+    const float jumpTimeToPeak = 0.5f;  // time to reach peak in seconds
+    const float jumpTimeToDescent = 0.4f;  // time to fall in seconds
+    const float horizontalJumpBoost = 1.3f;  // multiplier for horizontal speed during jump
 
-    // float jumpVelocity = ((2.0f * jumpHeight) / jumpTimeToPeak) * -1.0f;
-    float jumpGravity = ((-2.0f * jumpHeight) / (jumpTimeToPeak * jumpTimeToPeak) * -1.0f);
-    float fallGravity = ((-2.0f * jumpHeight) / (jumpTimeToDescent * jumpTimeToDescent) * -1.0f);
-
-    float gravityMultiplier = 10.0f;
+    // Calculated physics values
+    const float initialJumpVelocity = (-2.0f * jumpHeight) / jumpTimeToPeak;  // v0 = -2h/t
+    const float jumpGravity = (2.0f * jumpHeight) / (jumpTimeToPeak * jumpTimeToPeak);  // g = 2h/t²
+    const float fallGravity = (2.0f * jumpHeight) / (jumpTimeToDescent * jumpTimeToDescent);  // faster falling
 
     bool canDoubleJump = false;
 

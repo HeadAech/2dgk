@@ -12,8 +12,8 @@
 #include "Signals.h"
 
 int main() {
-    int width = 1100;
-    int height = 940;
+    int width = 900;
+    int height = 740;
 
     sf::RenderWindow window(sf::VideoMode(width, height), "2DGK");
 
