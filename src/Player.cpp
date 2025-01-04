@@ -87,6 +87,10 @@ void Player::input(sf::Event &event) {
         }
 
         if (event.type == sf::Event::KeyPressed) {
+            if (event.key.code == sf::Keyboard::S) {
+                applyForce({0, 900});
+            }
+
             if (event.key.code == sf::Keyboard::Space) {
                 if (isOnFloor) {
                     this->jump();
@@ -220,7 +224,7 @@ void Player::update(sf::RenderWindow& window, float delta) {
         velocity.x = -maxSpeed;
     }
 
-    velocity.y = std::clamp(velocity.y, -1000.0f, 1000.0f);
+    velocity.y = std::clamp(velocity.y, -2000.0f, 2000.0f);
 
     // std::cout << "delta time: " << delta << std::endl;
     std::cout << "velocity: " << velocity.x << ", " << velocity.y << std::endl;
@@ -259,13 +263,13 @@ void Player::onSetPositionForPlayerId(int id, sf::Vector2f pos) {
 }
 
 void Player::applyForce(sf::Vector2f force) {
-    acceleration += force;
+    velocity += force;
 }
 
 void Player::jump() {
     // Apply vertical jump velocity
     velocity.y = initialJumpVelocity;
-    
+
     // Boost horizontal velocity when jumping
     if (std::abs(velocity.x) > 0.1f) {  // Only boost if already moving horizontally
         velocity.x *= horizontalJumpBoost;
