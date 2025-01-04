@@ -17,9 +17,11 @@ int main() {
 
     sf::RenderWindow window(sf::VideoMode(width, height), "2DGK");
 
+    window.setKeyRepeatEnabled(false);
+
     GameManager gameManager;
 
-    Camera camera(window, FOLLOW_TWO_PLAYERS);
+    Camera camera(window, FOLLOW_ONE_PLAYER);
 
     sf::Texture circleTexture;
     sf::Texture dogTexture;
@@ -149,7 +151,11 @@ int main() {
             }
 
             camera.processCameraInput(event);
+            player1->input(event);
+            // player2->input(event);
         }
+        player1->input(event);
+        // player2->input(event);
 
         delta = clock.restart().asSeconds();
 
@@ -159,7 +165,7 @@ int main() {
 
         //update players
         player1->update(window, delta);
-        player2->update(window, delta);
+        // player2->update(window, delta);
 
         for(int i = 0; i < physics->circles.size(); i++) {
             physics->circles[i]->update();
@@ -177,8 +183,8 @@ int main() {
             b->updatePosition(camera.getView());
         }
         interface->updatePosition(camera.getView(), window);
-        guideArrow0->update({player1->getCenterX(), player1->getCenterY()}, worldGenerator->trapdoorPosition);
-        guideArrow1->update({player2->getCenterX(), player2->getCenterY()}, worldGenerator->trapdoorPosition);
+        // guideArrow0->update({player1->getCenterX(), player1->getCenterY()}, worldGenerator->trapdoorPosition);
+        // guideArrow1->update({player2->getCenterX(), player2->getCenterY()}, worldGenerator->trapdoorPosition);
 
 
         for (int i = 0; i < views; i++) {
@@ -192,12 +198,12 @@ int main() {
             worldGenerator->drawWorld(window);
 
             window.draw(player1->sprite);
-            window.draw(player2->sprite);
+            // window.draw(player2->sprite);
 
             interface->draw(window);
 
-            guideArrow0->draw(window);
-            guideArrow1->draw(window);
+            // guideArrow0->draw(window);
+            // guideArrow1->draw(window);
 
             for (int j = 0; j < physics->circles.size(); j++) {
                 window.draw(physics->circles[j]->shape);

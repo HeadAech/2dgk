@@ -5,6 +5,7 @@
 #include "Player.h"
 
 #include <iostream>
+#include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Mouse.hpp>
 
@@ -66,16 +67,7 @@ void Player::setY(float y) {
     sprite.setPosition(sprite.getPosition().x, y);
 }
 
-void Player::update(sf::RenderWindow& window, float delta) {
-    const float deAcceleration = 0.33f;
-
-    const float slowRate = .80f;
-
-    const float maxSpeed = 200.5f * slowRate;
-    const float speed = 200.5f;
-
-    // sf::Vector2f acceleration = sf::Vector2f(0, 0);
-
+void Player::input(sf::Event &event) {
     if (getInputMethod() == KEYBOARD_WASD) {
         bool isSPressed = false;
         bool isDPressed = false;
@@ -93,23 +85,20 @@ void Player::update(sf::RenderWindow& window, float delta) {
             acceleration.x += deAcceleration;
             isDPressed = true;
         }
-        //
-        // if(sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-        //     acceleration.y -= deAcceleration;
-        //     isWPressed = true;
-        // }
 
-        // if(sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-        //     acceleration.y += deAcceleration;
-        //     isSPressed = true;
-        // }
-
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && isOnFloor) {
-            this->jump();
-            isSpacePressed = true;
+        if (event.type == sf::Event::KeyPressed) {
+            if (event.key.code == sf::Keyboard::Space) {
+                if (isOnFloor) {
+                    this->jump();
+                } else {
+                    if (canDoubleJump) {
+                        this->jump();
+                        canDoubleJump = false;
+                    }
+                }
+                isSpacePressed = true;
+            }
         }
-
-        // std::cout << "Keyboard {W: " << isWPressed << ", A: " << isAPressed << ", S: " << isSPressed << ", D: " << isDPressed << "}" << std::endl;
     }
 
     if (getInputMethod() == KEYBOARD_IJKL) {
@@ -129,9 +118,18 @@ void Player::update(sf::RenderWindow& window, float delta) {
             isDPressed = true;
         }
 
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::I)) {
-            acceleration.y -= deAcceleration;
-            isWPressed = true;
+        if (event.type == sf::Event::KeyPressed) {
+            if (event.key.code == sf::Keyboard::I) {
+                if (isOnFloor) {
+                    this->jump();
+                } else {
+                    if (canDoubleJump) {
+                        this->jump();
+                        canDoubleJump = false;
+                    }
+                }
+                isWPressed = true;
+            }
         }
 
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::K)) {
@@ -159,19 +157,27 @@ void Player::update(sf::RenderWindow& window, float delta) {
             isDPressed = true;
         }
 
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && isOnFloor) {
-            // acceleration.y -= deAcceleration;
-            jump();
-            isWPressed = true;
-        }
-
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-            acceleration.y += deAcceleration;
-            isSPressed = true;
+        if (event.type == sf::Event::KeyPressed) {
+            if (event.key.code == sf::Keyboard::Up) {
+                if (isOnFloor) {
+                    this->jump();
+                } else {
+                    if (canDoubleJump) {
+                        std::cout << "Arrow Double Jumped" << std::endl;
+                        this->jump();
+                        canDoubleJump = false;
+                    }
+                }
+                isWPressed = true;
+            }
         }
 
         // std::cout << "Keyboard {W: " << isWPressed << ", A: " << isAPressed << ", S: " << isSPressed << ", D: " << isDPressed << "}" << std::endl;
     }
+}
+
+
+void Player::update(sf::RenderWindow& window, float delta) {
 
     if (getInputMethod() == MOUSE) {
         sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
@@ -183,35 +189,44 @@ void Player::update(sf::RenderWindow& window, float delta) {
         acceleration = sf::Vector2f(direction.x, direction.y) * deAcceleration * 0.1f;
     }
 
-    velocity.y += getGravity() * delta;
+    velocity.y += getGravity();
 
     // velocity += 0.5f * (acceleration + newAcc) * delta;
-    velocity += acceleration * speed * delta;
+    velocity.x += acceleration.x * speed;
+    velocity.y += acceleration.y;
 
+    // velocity.x = isOnFloor ? slowRate * velocity.x : slowRate / 3 * velocity.x;
     velocity.x = slowRate * velocity.x;
-
 
     // velocity += acceleration * speed * delta;
 
-    sprite.setPosition(this->x, this->y);
-    collisionShape->setPosition({this->x, this->y});
-    groundCheck->setPosition({this->x + size/2 - (size * 0.8f / 2), this->y + size});
 
-    std::cout << "delta time: " << delta << std::endl;
 
     if (isOnFloor && velocity.y > 0) {
         velocity.y = 0;
     }
 
+    if (isOnFloor && canDoubleJump == false) {
+        canDoubleJump = true;
+    }
+
     velocity.x = std::clamp(velocity.x, -maxSpeed, maxSpeed);
-    velocity.y = std::clamp(velocity.y, -25.0f, 25.0f);
+    velocity.y = std::clamp(velocity.y, -620.0f, 1000.0f);
 
-    std::cout << "velocity: " << velocity.x << ", " << velocity.y << std::endl;
-    std::cout << "acceleration: " << acceleration.x << ", " << acceleration.y << std::endl;
+    // std::cout << "delta time: " << delta << std::endl;
+    // std::cout << "velocity: " << velocity.x << ", " << velocity.y << std::endl;
+    // std::cout << "Can double jump: " << canDoubleJump << std::endl;
+    // std::cout << "acceleration: " << acceleration.x << ", " << acceleration.y << std::endl;
 
-    this->x += velocity.x;
-    this->y += velocity.y;
+    this->x += velocity.x * delta + 0.5f * acceleration.x * delta * delta;
+    this->y += velocity.y * delta + 0.5f * acceleration.y * delta * delta;
 
+    sprite.setPosition(this->x, this->y);
+    collisionShape->setPosition({this->x, this->y});
+    if (groundCheck->getType() == BOX)
+        groundCheck->setPosition({this->x + size/2 - (size * 0.8f / 2), this->y + size});
+    if (groundCheck->getType() == CIRCLE)
+        groundCheck->setPosition({this->x + size/2, this->y + size});
     acceleration = {0,0};
 }
 
@@ -239,10 +254,13 @@ void Player::applyForce(sf::Vector2f force) {
 }
 
 void Player::jump() {
-    std::cout << "Jumping" << std::endl;
+    float jumpVelocity = ((2.0f * jumpHeight * std::abs(velocity.x)) / jumpDistance) * -1.0f;
     velocity.y = jumpVelocity;
+    std::cout << "Jumping " << jumpVelocity << std::endl;
+
 }
 
 float Player::getGravity() {
+    // float jumpGravity = ((-2.0f * jumpHeight * (std::abs(velocity.x) * std::abs(velocity.x))) / (jumpDistance * jumpDistance) * -1.0f);
     return velocity.y < 0.0 ? jumpGravity : fallGravity;
 }

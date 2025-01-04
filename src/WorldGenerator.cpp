@@ -76,7 +76,7 @@ void WorldGenerator::createBlock(std::string line, int lineIndex) {
 
         // float size = data.sizeX;
 
-        float size = 90;
+        float size = 70;
         // sf::RectangleShape block;
         // block.setSize(sf::Vector2f(size, size));
         // block.setPosition(size * charIndex, size * lineIndex);

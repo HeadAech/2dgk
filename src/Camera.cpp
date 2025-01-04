@@ -82,6 +82,8 @@ void Camera::update(sf::RenderWindow& window) {
     if (cameraMode == FOLLOW_ONE_PLAYER) {
         target.x = this->playerToFollow->getCenterX();
         target.y = this->playerToFollow->getCenterY();
+
+        smoothMoveToTarget(splitLeftView, target);
     }
 
     if (cameraMode == FOLLOW_TWO_PLAYERS) {

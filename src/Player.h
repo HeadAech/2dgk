@@ -24,6 +24,13 @@ enum InputMethod {
 
 class Player {
 
+    const float deAcceleration = 0.33f;
+
+    const float slowRate = .80f;
+
+    const float maxSpeed = 400.5f * slowRate;
+    const float speed = 400.5f;
+
     public:
 
     int id;
@@ -40,13 +47,18 @@ class Player {
     bool isOnFloor = false;
 
     //jumping
-    float jumpHeight = 3.0f;
-    float jumpTimeToPeak = 0.4f;
-    float jumpTimeToDescent = 0.5f;
+    float jumpHeight = 50.0f;
+    float jumpTimeToPeak = 1.8f;
+    float jumpTimeToDescent = 1.5f;
+    float jumpDistance = 1.0f;
 
-    float jumpVelocity = ((2.0f * jumpHeight) / jumpTimeToPeak) * -1.0f;
+    // float jumpVelocity = ((2.0f * jumpHeight) / jumpTimeToPeak) * -1.0f;
     float jumpGravity = ((-2.0f * jumpHeight) / (jumpTimeToPeak * jumpTimeToPeak) * -1.0f);
     float fallGravity = ((-2.0f * jumpHeight) / (jumpTimeToDescent * jumpTimeToDescent) * -1.0f);
+
+    float gravityMultiplier = 10.0f;
+
+    bool canDoubleJump = false;
 
     sf::RectangleShape sprite;
 
@@ -81,13 +93,14 @@ class Player {
 
     void setCircleCollisionShape(float radius) {
         collisionShape = new CollisionShape(getPosition(), radius);
-        groundCheck = new CollisionShape({getPosition().x, getPosition().y + 5}, 2.5f);
+        groundCheck = new CollisionShape({getPosition().x, getPosition().y}, 5.0f);
     }
 
     void applyForce(sf::Vector2f force);
     void jump();
 
     void update(sf::RenderWindow& window, float delta);
+    void input(sf::Event& event);
 
     float getGravity();
 
