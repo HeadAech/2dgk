@@ -24,22 +24,35 @@ enum InputMethod {
 
 class Player {
 
-    private:
+    public:
 
     int id;
     float x;
     float y;
     sf::Vector2f velocity = sf::Vector2f(0, 0);
 
+    sf::Vector2f acceleration = sf::Vector2f(0, 0);
+
     int size = 60;
 
     InputMethod inputMethod;
 
+    bool isOnFloor = false;
 
-    public:
+    //jumping
+    float jumpHeight = 3.0f;
+    float jumpTimeToPeak = 0.4f;
+    float jumpTimeToDescent = 0.5f;
+
+    float jumpVelocity = ((2.0f * jumpHeight) / jumpTimeToPeak) * -1.0f;
+    float jumpGravity = ((-2.0f * jumpHeight) / (jumpTimeToPeak * jumpTimeToPeak) * -1.0f);
+    float fallGravity = ((-2.0f * jumpHeight) / (jumpTimeToDescent * jumpTimeToDescent) * -1.0f);
+
     sf::RectangleShape sprite;
 
     CollisionShape* collisionShape;
+
+    CollisionShape* groundCheck;
 
     Player();
 
@@ -63,13 +76,20 @@ class Player {
 
     void setCollisionShape(CollisionShapeType type) {
         collisionShape = new CollisionShape(getPosition(), {float(getSize()), float(getSize())}, type);
+        groundCheck = new CollisionShape({getPosition().x, getPosition().y}, {getSize() * 0.8f, 5.0f}, type);
     }
 
     void setCircleCollisionShape(float radius) {
         collisionShape = new CollisionShape(getPosition(), radius);
+        groundCheck = new CollisionShape({getPosition().x, getPosition().y + 5}, 2.5f);
     }
 
-    void update(sf::RenderWindow& window);
+    void applyForce(sf::Vector2f force);
+    void jump();
+
+    void update(sf::RenderWindow& window, float delta);
+
+    float getGravity();
 
     Player *clone();
 

@@ -66,21 +66,22 @@ void Player::setY(float y) {
     sprite.setPosition(sprite.getPosition().x, y);
 }
 
-void Player::update(sf::RenderWindow& window) {
+void Player::update(sf::RenderWindow& window, float delta) {
     const float deAcceleration = 0.33f;
-
-    const float maxSpeed = 5.5f;
-    const float speed = 5.5f;
 
     const float slowRate = .80f;
 
-    sf::Vector2f acceleration;
+    const float maxSpeed = 200.5f * slowRate;
+    const float speed = 200.5f;
+
+    // sf::Vector2f acceleration = sf::Vector2f(0, 0);
 
     if (getInputMethod() == KEYBOARD_WASD) {
         bool isSPressed = false;
         bool isDPressed = false;
         bool isWPressed = false;
         bool isAPressed = false;
+        bool isSpacePressed = false;
 
 
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
@@ -92,15 +93,20 @@ void Player::update(sf::RenderWindow& window) {
             acceleration.x += deAcceleration;
             isDPressed = true;
         }
+        //
+        // if(sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+        //     acceleration.y -= deAcceleration;
+        //     isWPressed = true;
+        // }
 
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-            acceleration.y -= deAcceleration;
-            isWPressed = true;
-        }
+        // if(sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+        //     acceleration.y += deAcceleration;
+        //     isSPressed = true;
+        // }
 
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-            acceleration.y += deAcceleration;
-            isSPressed = true;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && isOnFloor) {
+            this->jump();
+            isSpacePressed = true;
         }
 
         // std::cout << "Keyboard {W: " << isWPressed << ", A: " << isAPressed << ", S: " << isSPressed << ", D: " << isDPressed << "}" << std::endl;
@@ -153,8 +159,9 @@ void Player::update(sf::RenderWindow& window) {
             isDPressed = true;
         }
 
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-            acceleration.y -= deAcceleration;
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && isOnFloor) {
+            // acceleration.y -= deAcceleration;
+            jump();
             isWPressed = true;
         }
 
@@ -176,33 +183,36 @@ void Player::update(sf::RenderWindow& window) {
         acceleration = sf::Vector2f(direction.x, direction.y) * deAcceleration * 0.1f;
     }
 
-    velocity += acceleration * speed;
+    velocity.y += getGravity() * delta;
+
+    // velocity += 0.5f * (acceleration + newAcc) * delta;
+    velocity += acceleration * speed * delta;
+
+    velocity.x = slowRate * velocity.x;
+
+
+    // velocity += acceleration * speed * delta;
+
+    sprite.setPosition(this->x, this->y);
+    collisionShape->setPosition({this->x, this->y});
+    groundCheck->setPosition({this->x + size/2 - (size * 0.8f / 2), this->y + size});
+
+    std::cout << "delta time: " << delta << std::endl;
+
+    if (isOnFloor && velocity.y > 0) {
+        velocity.y = 0;
+    }
+
+    velocity.x = std::clamp(velocity.x, -maxSpeed, maxSpeed);
+    velocity.y = std::clamp(velocity.y, -25.0f, 25.0f);
+
+    std::cout << "velocity: " << velocity.x << ", " << velocity.y << std::endl;
+    std::cout << "acceleration: " << acceleration.x << ", " << acceleration.y << std::endl;
 
     this->x += velocity.x;
     this->y += velocity.y;
 
-    velocity = slowRate * velocity;
-
-    sprite.setPosition(this->x, this->y);
-    collisionShape->setPosition({this->x, this->y});
-
-    if (velocity.x > maxSpeed) {
-        velocity.x = maxSpeed;
-    }
-
-    if (velocity.x < -maxSpeed) {
-        velocity.x = -maxSpeed;
-    }
-
-    if (velocity.y > maxSpeed) {
-        velocity.y = maxSpeed;
-    }
-
-    if (velocity.y < -maxSpeed) {
-        velocity.y = -maxSpeed;
-    }
-
-    // std::cout << collisionShape->left << " " << collisionShape->right << " " << collisionShape->top << " " << collisionShape->bottom << std::endl;
+    acceleration = {0,0};
 }
 
 Player *Player::clone() {
@@ -222,4 +232,17 @@ void Player::onSetPositionForPlayerId(int id, sf::Vector2f pos) {
         this->setX(pos.x);
         this->setY(pos.y);
     }
+}
+
+void Player::applyForce(sf::Vector2f force) {
+    acceleration += force;
+}
+
+void Player::jump() {
+    std::cout << "Jumping" << std::endl;
+    velocity.y = jumpVelocity;
+}
+
+float Player::getGravity() {
+    return velocity.y < 0.0 ? jumpGravity : fallGravity;
 }

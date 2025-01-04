@@ -55,65 +55,14 @@ class Physics {
         }
     }
 
-
-    // void collisionWithCircles(Circle* c1, Circle* c2) {
-    //     if (c1->ID == c2->ID) {
-    //         return;
-    //     }
-    //
-    //     float distance = getDistanceBetweenCircles(c1, c2);
-    //
-    //     if (distance < c1->getRadius() + c2->getRadius()) {
-    //         c1->updatingCollision = true;
-    //         c2->updatingCollision = true;
-    //         // std::cout << "Collision occurred!" << std::endl;
-    //         sf::Vector2f centerDiff = c1->getPosition() - c2->getPosition();
-    //         distance = getDistanceBetweenCircles(c1, c2);
-    //
-    //         sf::Vector2f normal = centerDiff / distance;
-    //
-    //         float tx = -normal.y;
-    //         float ty = normal.x;
-    //
-    //         float dpTan1 = c1->getVelocity().x * tx + c1->getVelocity().y * ty;
-    //         float dpTan2 = c2->getVelocity().x * tx + c2->getVelocity().y * ty;
-    //
-    //         float dpNorm1 = c1->getVelocity().x * normal.x + c1->getVelocity().y * normal.y;
-    //         float dpNorm2 = c2->getVelocity().x * normal.x + c2->getVelocity().y * normal.y;
-    //
-    //         float m1 = (dpNorm1 * (c1->getWeight() - c2->getWeight()) + 2.0f * c2->getWeight() * dpNorm2) / (c1->getWeight() + c2->getWeight());
-    //         float m2 = (dpNorm2 * (c2->getWeight() - c1->getWeight()) + 2.0f * c1->getWeight() * dpNorm1) / (c1->getWeight() + c2->getWeight());
-    //
-    //         c1->setVelocity(tx * dpTan1 + normal.x * m1, ty * dpTan1 + normal.y * m1);
-    //         c2->setVelocity(tx * dpTan2 + normal.x * m2, ty * dpTan2 + normal.y * m2);
-    //     }
-    // }
-
-    // void seperateCircles(Circle* c1, Circle* c2) {
-    //     if (c1->ID == c2->ID) return;
-    //
-    //     float distance = getDistanceBetweenCircles(c1, c2);
-    //
-    //     if (distance <= c1->getRadius() + c2->getRadius()) {
-    //         sf::Vector2f s_v = getSeparationVector(c1, c2);
-    //
-    //         c1->setPosition(c1->getPosition() - s_v);
-    //         c2->setPosition(c2->getPosition() + s_v);
-    //     }
-    //
-    //
-    // }
-
-    // sf::Vector2f getSeparationVector(Circle* c1, Circle* c2) {
-    //     sf::Vector2f v1 = c2->getCenter() - c1->getCenter();
-    //
-    //     float v1_d = getDistanceBetweenCircles(c1, c2);
-    //
-    //     return (v1/v1_d) * ((c1->getRadius() + c2->getRadius() - v1_d));
-    // }
-
     bool isCollidingWithBoxShape(CollisionShape* shape1, CollisionShape* shape2) {
         return shape1->right > shape2->left && shape2->right > shape1->left && shape1->bottom > shape2->top && shape2->bottom > shape1->top;
+    }
+
+    bool isCollisionShapeOnFloor(CollisionShape* player, CollisionShape* floor) {
+        bool bottomTouchingTop = std::abs(player->top + player->getSize().y - floor->top) < 5.f; // Epsilon for precision
+        bool horizontallyAligned = (player->left < floor->left + floor->getSize().x && player->left + player->getSize().y > floor->left);
+        return bottomTouchingTop && horizontallyAligned;
     }
 
     bool isCollidingWithCircleShape(CollisionShape* shape1, CollisionShape* shape2) {
@@ -194,6 +143,9 @@ class Physics {
             if (ss.size() > 2) s = combineSeparationVectors(ss);
             else             s = getCombinedSeparationVector(ss);
         }
+        // std::cout << s.y << std::endl;
+        // if (s.y < 0) player->isOnFloor = true;
+        // else if (s.y > 0) player->isOnFloor = false;
 
         player->setX(player->getX() + s.x);
         player->setY(player->getY() + s.y);
@@ -348,6 +300,19 @@ class Physics {
 
     void checkCollisionForPlayersWithBlocks() {
         for (Player* player : players) {
+            for (CollisionShape* collisionShape: blocks) {
+                // if (isCollisionShapeOnFloor(player->collisionShape, collisionShape)) {
+                //     player->isOnFloor = true;
+                //     break;
+                // }
+                // player->isOnFloor = false;
+                if (isCollidingWithBoxShape(player->groundCheck, collisionShape)) {
+                    player->isOnFloor = true;
+                    break;
+                }
+                player->isOnFloor = false;
+            }
+
             std::vector<CollisionShape*> collidingWith;
             for (CollisionShape* collisionShape : blocks) {
                 CollisionShapeType t = player->collisionShape->getType();
@@ -388,7 +353,7 @@ class Physics {
                 // break;
             }
 
-            if (collidingWith.size() > 0) {
+            if (!collidingWith.empty()) {
                 applySeperationToPlayer(player, collidingWith);
 
             }

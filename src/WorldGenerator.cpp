@@ -182,15 +182,16 @@ void WorldGenerator::generateWorld() {
 
     std::uniform_int_distribution<> dis2(0, trapdoorPos.size() - 1);
 
-    int randomTrapdoorIndex = trapdoorPos[dis2(gen)];
+    if (!trapdoorPos.empty()) {
+        int randomTrapdoorIndex = trapdoorPos[dis2(gen)];
 
-    blocks[randomTrapdoorIndex].setCollidable(true);
-    blocks[randomTrapdoorIndex].createCollisionShape();
-    blocks[randomTrapdoorIndex].setTriggerOnCollisionShape(NEXT_STAGE);
-    blocks[randomTrapdoorIndex].setTexture(this->textures["$"]);
+        blocks[randomTrapdoorIndex].setCollidable(true);
+        blocks[randomTrapdoorIndex].createCollisionShape();
+        blocks[randomTrapdoorIndex].setTriggerOnCollisionShape(NEXT_STAGE);
+        blocks[randomTrapdoorIndex].setTexture(this->textures["$"]);
 
-    this->trapdoorPosition = {blocks[randomTrapdoorIndex].getPosition().x + blocks[randomTrapdoorIndex].getSize().x/2, blocks[randomTrapdoorIndex].getPosition().y + blocks[randomTrapdoorIndex].getSize().y/2};
-
+        this->trapdoorPosition = {blocks[randomTrapdoorIndex].getPosition().x + blocks[randomTrapdoorIndex].getSize().x/2, blocks[randomTrapdoorIndex].getPosition().y + blocks[randomTrapdoorIndex].getSize().y/2};
+    }
     std::cout << "Generating world..." << std::endl;
 
     Signals::SetBoundary.emit(this->getBoundary());

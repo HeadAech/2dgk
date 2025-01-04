@@ -11,8 +11,7 @@
 #include "WorldGenerator.h"
 #include "Signals.h"
 
-int main()
-{
+int main() {
     int width = 1100;
     int height = 940;
 
@@ -64,7 +63,7 @@ int main()
     camera.setPlayerToFollow(player1);
     camera.setSecondPlayerToFollow(player2);
 
-    WorldGenerator* worldGenerator = new WorldGenerator("data/level/labyrinth1.txt", "data/level/blocks.txt");
+    WorldGenerator* worldGenerator = new WorldGenerator("data/level/platformer.txt", "data/level/blocks.txt");
     worldGenerator->loadData();
     worldGenerator->generateWorld();
 
@@ -136,7 +135,7 @@ int main()
     // interface->setClock(&clock);
     // sf::Vector2f target = worldGenerator->trapdoorPosition;
 
-
+    float delta = 0.0f;
     while (window.isOpen())
     {
         sf::Event event;
@@ -145,19 +144,22 @@ int main()
         {
             if (event.type == sf::Event::Closed) {
                 window.close();
+                delete t;
                 return 0;
             }
 
             camera.processCameraInput(event);
         }
 
+        delta = clock.restart().asSeconds();
+
         int views = camera.isSplit() ? 2 : 1;
 
         camera.update(window);
 
         //update players
-        player1->update(window);
-        player2->update(window);
+        player1->update(window, delta);
+        player2->update(window, delta);
 
         for(int i = 0; i < physics->circles.size(); i++) {
             physics->circles[i]->update();

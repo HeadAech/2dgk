@@ -19,12 +19,17 @@ class Interface {
     sf::Font* font;
     sf::Clock* clock;
 
+    sf::Text* player0Info;
+    sf::Text* player1Info;
+
     Interface(sf::Font* font) {
         Signals::ShowMessage.connect([this] (std::string msg) {this->onShowMessage(msg);});
         text = new sf::Text("Find the trapdoor!", *font, 24);
         text->setPosition({10, 10});
         text->setOutlineColor(sf::Color::Black);
         text->setOutlineThickness(2);
+
+        // player0Info = new sf::Text("Player 0", *font, 24);
         clock = new sf::Clock();
     }
     ~Interface(){}
