@@ -67,25 +67,8 @@ void Player::setY(float y) {
     sprite.setPosition(sprite.getPosition().x, y);
 }
 
-void Player::input(sf::Event &event) {
+void Player::oneShotInput(sf::Event &event) {
     if (getInputMethod() == KEYBOARD_WASD) {
-        bool isSPressed = false;
-        bool isDPressed = false;
-        bool isWPressed = false;
-        bool isAPressed = false;
-        bool isSpacePressed = false;
-
-
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-            acceleration.x -= deAcceleration;
-            isAPressed = true;
-        }
-
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-            acceleration.x += deAcceleration;
-            isDPressed = true;
-        }
-
         if (event.type == sf::Event::KeyPressed) {
             if (event.key.code == sf::Keyboard::S) {
                 applyForce({0, 900});
@@ -100,9 +83,68 @@ void Player::input(sf::Event &event) {
                         canDoubleJump = false;
                     }
                 }
-                isSpacePressed = true;
+            }
+
+            if (event.key.code == sf::Keyboard::Up) {
+                jumpHeight += 10;
+                calculateJumpParameters();
+                printInfo();
+            }
+
+            if (event.key.code == sf::Keyboard::Down) {
+                jumpHeight -= 10;
+                calculateJumpParameters();
+                printInfo();
+            }
+
+            if (event.key.code == sf::Keyboard::Left) {
+                jumpDistance -= 10;
+                calculateJumpParameters();
+                printInfo();
+            }
+
+            if (event.key.code == sf::Keyboard::Right) {
+                jumpDistance += 10;
+                calculateJumpParameters();
+                printInfo();
             }
         }
+    }
+}
+
+
+void Player::input(sf::Event &event) {
+    if (getInputMethod() == KEYBOARD_WASD) {
+        bool isSPressed = false;
+        bool isDPressed = false;
+        bool isWPressed = false;
+        bool isAPressed = false;
+        bool isSpacePressed = false;
+
+
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+            direction = -1;
+            if (!isOnFloor && velocity.x < -50)
+                return;
+            if (!isOnFloor)
+                acceleration.x -= deAcceleration / 10;
+            else
+                acceleration.x -= deAcceleration;
+            isAPressed = true;
+        }
+
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+            direction = 1;
+            if (!isOnFloor && velocity.x > 50)
+                return;
+            if (!isOnFloor)
+                acceleration.x += deAcceleration / 10;
+            else
+                acceleration.x += deAcceleration;
+            isDPressed = true;
+        }
+
+
     }
 
     if (getInputMethod() == KEYBOARD_IJKL) {
@@ -196,16 +238,19 @@ void Player::update(sf::RenderWindow& window, float delta) {
     velocity.y += getGravity() * delta;
 
     // Air control - reduce horizontal acceleration while in air
-    if (!isOnFloor) {
-        acceleration.x *= 0.5f;  // Reduce air control
-    }
+    // if (!isOnFloor) {
+    //     acceleration.x *= 0.5f;  // Reduce air control
+    // }
 
     // Apply horizontal movement
     velocity.x += acceleration.x * speed;
-    velocity.x = slowRate * velocity.x;
+    // velocity.x = slowRate * velocity.x;
 
     // velocity += acceleration * speed * delta;
 
+    if (isOnFloor) {
+        velocity.x *= slowRate;
+    }
 
 
     if (isOnFloor && velocity.y > 0) {
@@ -227,7 +272,7 @@ void Player::update(sf::RenderWindow& window, float delta) {
     velocity.y = std::clamp(velocity.y, -2000.0f, 2000.0f);
 
     // std::cout << "delta time: " << delta << std::endl;
-    std::cout << "velocity: " << velocity.x << ", " << velocity.y << std::endl;
+    // std::cout << "velocity: " << velocity.x << ", " << velocity.y << std::endl;
     // std::cout << "Can double jump: " << canDoubleJump << std::endl;
     // std::cout << "acceleration: " << acceleration.x << ", " << acceleration.y << std::endl;
 
@@ -268,15 +313,34 @@ void Player::applyForce(sf::Vector2f force) {
 
 void Player::jump() {
     // Apply vertical jump velocity
+    // calculateJumpParameters();
     velocity.y = initialJumpVelocity;
+    velocity.x = jumpVelocity * direction;
 
-    // Boost horizontal velocity when jumping
-    if (std::abs(velocity.x) > 0.1f) {  // Only boost if already moving horizontally
-        velocity.x *= horizontalJumpBoost;
-    }
+    printInfo();
 }
 
 float Player::getGravity() {
     // float jumpGravity = ((-2.0f * jumpHeight * (std::abs(velocity.x) * std::abs(velocity.x))) / (jumpDistance * jumpDistance) * -1.0f);
-    return velocity.y < 0.0 ? jumpGravity : fallGravity;
+    return velocity.y < 0.0 ? jumpGravity : jumpGravity;
 }
+
+void Player::printInfo() const {
+    std::cout << std::endl << "-----" << std::endl;
+    std::cout << "Jump Height: " << jumpHeight << std::endl;
+    std::cout << "Jump Distance: " << jumpDistance << std::endl;
+    std::cout << "Jump Velocity: " << jumpVelocity << std::endl;
+    std::cout << "Gravity: " << jumpGravity << std::endl;
+    std::cout << "Initial Jump Velocity: " << initialJumpVelocity << std::endl;
+    std::cout << "-----" << std::endl;
+}
+
+void Player::calculateJumpParameters() {
+    // initialJumpVelocity = (-2.0f * jumpHeight) / jumpTimeToPeak;
+    // jumpGravity = (2.0f * jumpHeight) / (jumpTimeToPeak * jumpTimeToPeak);
+    // fallGravity = (2.0f * jumpHeight) / (jumpTimeToDescent * jumpTimeToDescent);
+    jumpVelocity = jumpDistance / jumpTimeToPeak;
+    initialJumpVelocity = (-2 * jumpHeight * jumpVelocity) / jumpDistance;
+    jumpGravity = (2 * jumpHeight * (jumpVelocity * jumpVelocity)) / (jumpDistance * jumpDistance);
+}
+

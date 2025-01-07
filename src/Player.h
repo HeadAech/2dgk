@@ -40,6 +40,8 @@ class Player {
 
     sf::Vector2f acceleration = sf::Vector2f(0, 0);
 
+    int direction = -1;
+
     int size = 60;
 
     InputMethod inputMethod;
@@ -47,15 +49,19 @@ class Player {
     bool isOnFloor = false;
 
     //jumping parameters
-    const float jumpHeight = 100.0f;  // maximum height in pixels
-    const float jumpTimeToPeak = 0.5f;  // time to reach peak in seconds
-    const float jumpTimeToDescent = 0.4f;  // time to fall in seconds
-    const float horizontalJumpBoost = 1.3f;  // multiplier for horizontal speed during jump
+    float jumpHeight = 100.0f;  // maximum height in pixels
+    float jumpTimeToPeak = 0.5f;  // time to reach peak in seconds
+    float jumpTimeToDescent = 0.4f;  // time to fall in seconds
+
+    float jumpDistance = 200.0f;
+    float jumpVelocity = jumpDistance / jumpTimeToPeak;
 
     // Calculated physics values
-    const float initialJumpVelocity = (-2.0f * jumpHeight) / jumpTimeToPeak;  // v0 = -2h/t
-    const float jumpGravity = (2.0f * jumpHeight) / (jumpTimeToPeak * jumpTimeToPeak);  // g = 2h/t²
-    const float fallGravity = (2.0f * jumpHeight) / (jumpTimeToDescent * jumpTimeToDescent);  // faster falling
+    // float initialJumpVelocity = (-2.0f * jumpHeight) / jumpTimeToPeak;  // v0 = -2h/t
+    // float jumpGravity = (2.0f * jumpHeight) / (jumpTimeToPeak * jumpTimeToPeak);  // g = 2h/t²
+    float initialJumpVelocity = (-2 * jumpHeight) * (jumpVelocity / jumpDistance);
+    float jumpGravity = (2 * jumpHeight * (jumpVelocity * jumpVelocity)) / (jumpDistance * jumpDistance);
+    float fallGravity = (2.0f * jumpHeight) / (jumpTimeToDescent * jumpTimeToDescent);  // faster falling
 
     bool canDoubleJump = false;
 
@@ -100,12 +106,16 @@ class Player {
 
     void update(sf::RenderWindow& window, float delta);
     void input(sf::Event& event);
+    void oneShotInput(sf::Event& event);
 
     float getGravity();
 
     Player *clone();
 
     void onSetPositionForPlayerId(int id, sf::Vector2f pos);
+
+    void printInfo() const;
+    void calculateJumpParameters();
 };
 
 

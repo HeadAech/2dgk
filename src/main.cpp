@@ -151,8 +151,9 @@ int main() {
             }
 
             camera.processCameraInput(event);
-            player1->input(event);
-            // player2->input(event);
+
+            player1->oneShotInput(event);
+            // player2->oneShotInput(event);
         }
         player1->input(event);
         // player2->input(event);
