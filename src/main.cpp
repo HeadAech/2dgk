@@ -65,7 +65,7 @@ int main() {
     camera.setPlayerToFollow(player1);
     camera.setSecondPlayerToFollow(player2);
 
-    WorldGenerator* worldGenerator = new WorldGenerator("data/level/platformer.txt", "data/level/blocks.txt");
+    WorldGenerator* worldGenerator = new WorldGenerator("data/level/platformer1.txt", "data/level/blocks.txt");
     worldGenerator->loadData();
     worldGenerator->generateWorld();
 
@@ -137,6 +137,8 @@ int main() {
     // interface->setClock(&clock);
     // sf::Vector2f target = worldGenerator->trapdoorPosition;
 
+    std::vector<Player*> players = {player1, player2};
+
     float delta = 0.0f;
     while (window.isOpen())
     {
@@ -177,6 +179,10 @@ int main() {
         physics->checkCollision(CIRCLES);
         physics->checkCollisionForPlayersWithBlocks();
 
+        if (player1->y > 2500) {
+            Signals::SetPositionForPlayerId.emit(0, gameManager.getPlayer1SpawnPos());
+        }
+
         //update buttons
         for (auto i = 0; i < interface->buttons.size(); i++) {
             auto b = interface->buttons[i];
@@ -184,7 +190,7 @@ int main() {
             b->updatePosition(camera.getView());
         }
         interface->updatePosition(camera.getView(), window);
-        // guideArrow0->update({player1->getCenterX(), player1->getCenterY()}, worldGenerator->trapdoorPosition);
+        guideArrow0->update({player1->getCenterX(), player1->getCenterY()}, worldGenerator->trapdoorPosition);
         // guideArrow1->update({player2->getCenterX(), player2->getCenterY()}, worldGenerator->trapdoorPosition);
 
 
@@ -203,7 +209,7 @@ int main() {
 
             interface->draw(window);
 
-            // guideArrow0->draw(window);
+            guideArrow0->draw(window);
             // guideArrow1->draw(window);
 
             for (int j = 0; j < physics->circles.size(); j++) {
@@ -212,10 +218,7 @@ int main() {
 
         }
 
-
-        // window.draw(*t);
-
-        window.setFramerateLimit(60);
+        window.setFramerateLimit(120);
         window.display();
         window.clear(bgColor);
 

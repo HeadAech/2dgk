@@ -55,7 +55,7 @@ private:
 
         }
 
-        worldGenerator->setMapLayoutPath("data/level/labyrinth" + std::to_string(labIndex) + ".txt");
+        worldGenerator->setMapLayoutPath("data/level/platformer" + std::to_string(labIndex) + ".txt");
         worldGenerator->generateWorld();
         setBlocksForPhysics();
 

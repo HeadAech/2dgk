@@ -325,6 +325,7 @@ class Physics {
                                 if (collisionShape->getTriggerType() == NEXT_STAGE) {
                                     collisionShape->triggered = true;
                                     Signals::NextStage.emit(player->getId());
+                                    return;
                                 }
                             }
                         } else
@@ -339,6 +340,7 @@ class Physics {
                                 if (collisionShape->getTriggerType() == NEXT_STAGE) {
                                     collisionShape->triggered = true;
                                     Signals::NextStage.emit(player->getId());
+                                    return;
                                 }
                             }
                         } else
