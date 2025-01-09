@@ -12,6 +12,6 @@
 -- Detecting CXX compile features
 -- Detecting CXX compile features - done
 -- Found SFML 2.6.2 in /opt/homebrew/lib/cmake/SFML
--- Configuring done (0.9s)
+-- Configuring done (0.7s)
 -- Generating done (0.0s)
 -- Build files have been written to: /Users/hubert/Desktop/Dev/CLionProjects/2dgk/cmake-build-debug

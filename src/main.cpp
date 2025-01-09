@@ -129,7 +129,6 @@ int main() {
     Signals::SetPositionForPlayerId.emit(1, gameManager.getPlayer2SpawnPos());
 
     sf::Clock clock;
-
     auto* t = new sf::Text("Game Over", font, 30);
     t->setPosition({100, 100});
     t->setFillColor(sf::Color::Black);
@@ -148,7 +147,6 @@ int main() {
         {
             if (event.type == sf::Event::Closed) {
                 window.close();
-                delete t;
                 return 0;
             }
 

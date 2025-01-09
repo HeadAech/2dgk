@@ -261,13 +261,13 @@ void Player::update(sf::RenderWindow& window, float delta) {
         canDoubleJump = true;
     }
 
-    if (velocity.x > maxSpeed && isOnFloor) {
-        velocity.x = maxSpeed;
-    }
-
-    if (velocity.x < -maxSpeed && isOnFloor) {
-        velocity.x = -maxSpeed;
-    }
+    // if (velocity.x > maxSpeed && isOnFloor) {
+    //     velocity.x = maxSpeed;
+    // }
+    //
+    // if (velocity.x < -maxSpeed && isOnFloor) {
+    //     velocity.x = -maxSpeed;
+    // }
 
     velocity.y = std::clamp(velocity.y, -2000.0f, 2000.0f);
 
@@ -316,7 +316,6 @@ void Player::jump() {
     // calculateJumpParameters();
     velocity.y = initialJumpVelocity;
     velocity.x = jumpVelocity * direction;
-
     printInfo();
 }
 
