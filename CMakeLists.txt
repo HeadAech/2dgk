@@ -22,6 +22,7 @@ set(SOURCE_FILES src/main.cpp
         src/GameManager.h
         src/Signals.cpp
         src/GuideArrow.h
+        src/Background.h
 )
 add_executable(main ${SOURCE_FILES})
 include_directories(/usr/local/include)

@@ -32,6 +32,10 @@ Camera::Camera(sf::RenderWindow& window, CameraMode cameraMode) {
 Camera::~Camera() {
 }
 
+sf::Vector2f Camera::getPosition() {
+    return {getView().getCenter().x, getView().getCenter().y + offsetY};
+}
+
 
 sf::View &Camera::getView() {
     return this->splitLeftView;
@@ -81,7 +85,7 @@ void Camera::update(sf::RenderWindow& window) {
 
     if (cameraMode == FOLLOW_ONE_PLAYER) {
         target.x = this->playerToFollow->getCenterX();
-        target.y = this->playerToFollow->getCenterY();
+        target.y = this->playerToFollow->getCenterY() + offsetY;
 
         smoothMoveToTarget(splitLeftView, target);
     }
@@ -207,3 +211,6 @@ bool Camera::isSplit() {
     return this->split;
 }
 
+float Camera::getOffsetY() {
+    return offsetY;
+}

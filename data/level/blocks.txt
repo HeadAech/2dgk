@@ -1,83 +1,160 @@
 horizontal_wall
 #
-50
-50
+70
+70
 horizontal_wall.jpg
 true
 
 vertical_wall
 |
-50
-50
+70
+70
 vertical_wall.jpg
 true
 
 pavement
-.
-50
-50
+*
+70
+70
 pavement.jpg
 false
 
 plant
 ,
-50
-50
+70
+70
 plant.jpg
 false
 
 horizontal_wall
 /
-50
-50
+70
+70
 horizontal_wall.jpg
 true
 
 horizontal_wall
 \
-50
-50
+70
+70
 horizontal_wall.jpg
 true
 
 pavement
 =
-50
-50
+70
+70
 pavement.jpg
 false
 
 pavement
 '
-50
-50
+70
+70
 pavement.jpg
 false
 
 air
-*
-50
-50
+.
+70
+70
 white.jpg
 false
 
 trapdoor
 $
-50
-50
+70
+70
 pavement_trapdoor.jpg
 true
 
 spawnpoint0
 @
-50
-50
+70
+70
 pavement.jpg
 false
 
 spawnpoint1
 &
-50
-50
+70
+70
 pavement.jpg
+false
+
+ground_top_left
+Q
+70
+70
+tiles/Ground Top left.png
+true
+
+ground_top
+W
+70
+70
+tiles/Ground Top.png
+true
+
+ground_top_right
+E
+70
+70
+tiles/Ground Top Right.png
+true
+
+ground_middle
+S
+70
+70
+tiles/Ground Middle.png
+true
+
+ground_left
+A
+70
+70
+tiles/Ground Left.png
+true
+
+ground_right
+D
+70
+70
+tiles/Ground Right.png
+true
+
+ground_bottom
+X
+70
+70
+tiles/Ground Bottom.png
+true
+
+ground_bottom_left
+Z
+70
+70
+tiles/Ground Bottom Left.png
+true
+
+ground_bottom_right
+C
+70
+70
+tiles/Ground Bottom Right.png
+true
+
+tree_bottom
+G
+90
+90
+tiles/Tree Bottom.png
+false
+
+tree_top
+T
+90
+90
+tiles/Tree Top.png
 false

@@ -26,7 +26,7 @@ class Player {
 
     const float deAcceleration = 0.33f;
 
-    const float slowRate = .80f;
+    const float slowRate = 0.80f;
 
     const float maxSpeed = 400.5f;
     const float speed = 400.5f;
@@ -92,8 +92,8 @@ class Player {
     void setY(float y);
 
     void setCollisionShape(CollisionShapeType type) {
-        collisionShape = new CollisionShape(getPosition(), {float(getSize()), float(getSize())}, type);
-        groundCheck = new CollisionShape({getPosition().x, getPosition().y}, {getSize() * 0.8f, 5.0f}, type);
+        collisionShape = new CollisionShape({getPosition().x, getPosition().y + 30}, {float(getSize()), float(getSize())}, type);
+        groundCheck = new CollisionShape({getPosition().x, getPosition().y + 30}, {getSize() * 0.8f, 5.0f}, type);
     }
 
     void setCircleCollisionShape(float radius) {

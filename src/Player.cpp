@@ -237,16 +237,8 @@ void Player::update(sf::RenderWindow& window, float delta) {
 
     velocity.y += getGravity() * delta;
 
-    // Air control - reduce horizontal acceleration while in air
-    // if (!isOnFloor) {
-    //     acceleration.x *= 0.5f;  // Reduce air control
-    // }
-
     // Apply horizontal movement
     velocity.x += acceleration.x * speed;
-    // velocity.x = slowRate * velocity.x;
-
-    // velocity += acceleration * speed * delta;
 
     if (isOnFloor) {
         velocity.x *= slowRate;
@@ -261,28 +253,16 @@ void Player::update(sf::RenderWindow& window, float delta) {
         canDoubleJump = true;
     }
 
-    // if (velocity.x > maxSpeed && isOnFloor) {
-    //     velocity.x = maxSpeed;
-    // }
-    //
-    // if (velocity.x < -maxSpeed && isOnFloor) {
-    //     velocity.x = -maxSpeed;
-    // }
-
     velocity.y = std::clamp(velocity.y, -2000.0f, 2000.0f);
-
-    // std::cout << "delta time: " << delta << std::endl;
-    // std::cout << "velocity: " << velocity.x << ", " << velocity.y << std::endl;
-    // std::cout << "Can double jump: " << canDoubleJump << std::endl;
-    // std::cout << "acceleration: " << acceleration.x << ", " << acceleration.y << std::endl;
 
     this->x += velocity.x * delta + 0.5f * acceleration.x * delta * delta;
     this->y += velocity.y * delta + 0.5f * acceleration.y * delta * delta;
 
     sprite.setPosition(this->x, this->y);
-    collisionShape->setPosition({this->x, this->y});
+    //WARN: Collision shape is off-set, because of the sprite rendering of the ground (not a full block)
+    collisionShape->setPosition({this->x, this->y - 20});
     if (groundCheck->getType() == BOX)
-        groundCheck->setPosition({this->x + size/2 - (size * 0.8f / 2), this->y + size});
+        groundCheck->setPosition({this->x + size/2 - (size * 0.8f / 2), this->y + size - 20});
     if (groundCheck->getType() == CIRCLE)
         groundCheck->setPosition({this->x + size/2, this->y + size});
     acceleration = {0,0};
@@ -335,9 +315,6 @@ void Player::printInfo() const {
 }
 
 void Player::calculateJumpParameters() {
-    // initialJumpVelocity = (-2.0f * jumpHeight) / jumpTimeToPeak;
-    // jumpGravity = (2.0f * jumpHeight) / (jumpTimeToPeak * jumpTimeToPeak);
-    // fallGravity = (2.0f * jumpHeight) / (jumpTimeToDescent * jumpTimeToDescent);
     jumpVelocity = jumpDistance / jumpTimeToPeak;
     initialJumpVelocity = (-2 * jumpHeight * jumpVelocity) / jumpDistance;
     jumpGravity = (2 * jumpHeight * (jumpVelocity * jumpVelocity)) / (jumpDistance * jumpDistance);

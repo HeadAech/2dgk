@@ -1,6 +1,7 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
+#include "Background.h"
 #include "Button.h"
 #include "Camera.h"
 #include "GameManager.h"
@@ -65,7 +66,7 @@ int main() {
     camera.setPlayerToFollow(player1);
     camera.setSecondPlayerToFollow(player2);
 
-    WorldGenerator* worldGenerator = new WorldGenerator("data/level/platformer1.txt", "data/level/blocks.txt");
+    WorldGenerator* worldGenerator = new WorldGenerator("data/level/test1.txt", "data/level/blocks.txt");
     worldGenerator->loadData();
     worldGenerator->generateWorld();
 
@@ -138,6 +139,11 @@ int main() {
 
     std::vector<Player*> players = {player1, player2};
 
+    Background background(&camera);
+    background.AddLayer("data/img/background/back.png", 1.5f);
+    background.AddLayer("data/img/background/middle.png", 1.0f);
+    // background.AddLayer("data/img/background/testing/front.png");
+
     float delta = 0.0f;
     while (window.isOpen())
     {
@@ -163,6 +169,8 @@ int main() {
         int views = camera.isSplit() ? 2 : 1;
 
         camera.update(window);
+        background.Update(delta, window);
+
 
         //update players
         player1->update(window, delta);
@@ -194,6 +202,8 @@ int main() {
 
         for (int i = 0; i < views; i++) {
 
+            background.Draw(window);
+
             if (camera.isSplit()) {
                 window.setView(i == 0 ? camera.getSplitViewLeft() : camera.getSplitViewRight());
             } else {
@@ -207,7 +217,7 @@ int main() {
 
             interface->draw(window);
 
-            guideArrow0->draw(window);
+            // guideArrow0->draw(window);
             // guideArrow1->draw(window);
 
             for (int j = 0; j < physics->circles.size(); j++) {

@@ -36,6 +36,8 @@ private:
     public:
     bool collidable = true;
 
+    sf::Vector2f size;
+
     sf::RectangleShape shape;
 
     CollisionShape* collisionShape;
@@ -45,6 +47,13 @@ private:
         shape.setTexture(texture);
     }
 
+    void setSize(float sizeX, float sizeY) {
+        this->size = sf::Vector2f(sizeX, sizeY);
+    }
+
+    void setTextureSize(float x, float y) {
+        shape.setSize(sf::Vector2f(x, y));
+    }
 
     void setName(std::string name) {
         this->name = name;
@@ -63,16 +72,16 @@ private:
         this->collidable = v;
     }
 
-    void setSize(float x, float y) {
-        shape.setSize({x, y});
-    }
+    // void setSize(float x, float y) {
+    //     shape.setSize({x, y});
+    // }
 
     void setPosition(float x, float y) {
         shape.setPosition(x, y);
     }
 
     void createCollisionShape(bool isTrigger = false) {
-        collisionShape = new CollisionShape(shape.getPosition(), shape.getSize(), BOX);
+        collisionShape = new CollisionShape(shape.getPosition(), getSize(), BOX);
         collisionShape->setTrigger(isTrigger);
         // std::cout << "Generated collision shape at " << shape.getPosition().x << " " << shape.getPosition().y << std::endl;
         // std::cout << "Size " << shape.getSize().x << " " << shape.getSize().y << std::endl;
@@ -88,7 +97,7 @@ private:
     }
 
     sf::Vector2f getSize() {
-        return shape.getSize();
+        return size;
     }
 };
 

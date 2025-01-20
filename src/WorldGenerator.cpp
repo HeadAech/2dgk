@@ -83,6 +83,7 @@ void WorldGenerator::createBlock(std::string line, int lineIndex) {
 
         Block block(data.name == "trapdoor" ? this->textures["."] : texture);
         block.setSize(size, size);
+        block.setTextureSize(data.sizeX, data.sizeY);
         block.setPosition(size * charIndex, size * lineIndex);
         block.setCollidable(data.name == "trapdoor" ? false : data.collidable);
         block.setName(data.name);
@@ -200,6 +201,9 @@ void WorldGenerator::generateWorld() {
 void WorldGenerator::drawWorld(sf::RenderWindow &window) {
 
     for(Block block : blocks) {
+        if (block.getName() == "spawnpoint0" || block.getName() == "spawnpoint1" || block.getName() == "air") {
+            continue;
+        }
         window.draw(block.shape);
     }
 }

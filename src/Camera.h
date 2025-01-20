@@ -33,12 +33,14 @@ private:
 
     float currentSplit = 0.0f;
 
-    bool snapToEdges = true;
+    bool snapToEdges = false;
 
     int maxZoom = 3;
     int currentZoom = 0;
     int minZoom = -3;
     float zoomFactor = 0.8f;
+
+    float offsetY = -80.0f;
 
     bool split = false;
 
@@ -72,6 +74,8 @@ private:
 
     void setPlayerToFollow(Player* playerToFollow);
     void setSecondPlayerToFollow(Player* secondPlayerToFollow);
+
+    float getOffsetY();
 };
 
 #endif //CAMERA_H
