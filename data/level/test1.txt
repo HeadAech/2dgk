@@ -3,7 +3,7 @@
 
 ................T
 ......T.........G
-&@....G.......QWWWE
+&@....G.W.....QWWWE
 QWWWWWWWWWWWE.ASSSD
 ASSSSSSSSSSSD.ASSSD
 ASSSSSSSSSSSD.ASSSD

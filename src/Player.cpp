@@ -58,13 +58,13 @@ sf::Vector2f Player::getVelocity() {
 
 
 void Player::setX(float x) {
-    Player::x = x;
-    sprite.setPosition(x, sprite.getPosition().y);
+    this->x = x;
+    // sprite.setPosition(x, sprite.getPosition().y);
 }
 
 void Player::setY(float y) {
-    Player::y = y;
-    sprite.setPosition(sprite.getPosition().x, y);
+    this->y = y;
+    // sprite.setPosition(sprite.getPosition().x, y);
 }
 
 void Player::oneShotInput(sf::Event &event) {
@@ -225,6 +225,43 @@ void Player::input(sf::Event &event) {
 
 void Player::update(sf::RenderWindow& window, float delta) {
 
+    if (isOnFloor) {
+        if (currentAnimation == FLYING) {
+            animations[currentAnimation].Stop();
+        }
+        if (currentAnimation != IDLE) {
+            currentAnimation = IDLE;
+            if (!animations[currentAnimation].IsPlaying())
+                animations[currentAnimation].Play();
+        }
+    }
+    if (velocity.y > 100 && !isOnFloor) {
+        if (currentAnimation == IDLE || currentAnimation == FLYING) {
+            animations[currentAnimation].Stop();
+        }
+        if (currentAnimation != FALLING) {
+            currentAnimation = FALLING;
+            if (!animations[currentAnimation].IsPlaying())
+                animations[currentAnimation].Play();
+        }
+    }
+    if (velocity.y < 0 && !isOnFloor) {
+        if (currentAnimation == IDLE || currentAnimation == FALLING) {
+            animations[currentAnimation].Stop();
+        }
+        if (currentAnimation != FLYING) {
+            currentAnimation = FLYING;
+            if (!animations[currentAnimation].IsPlaying())
+                animations[currentAnimation].Play();
+        }
+    }
+
+    std::cout << velocity.y << std::endl;
+
+    if (!animations.empty()) {
+        animations[currentAnimation].Update(delta);
+    }
+
     if (getInputMethod() == MOUSE) {
         sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
         sf::Vector2f mouseWorldPosition = window.mapPixelToCoords(mousePosition);
@@ -258,7 +295,12 @@ void Player::update(sf::RenderWindow& window, float delta) {
     this->x += velocity.x * delta + 0.5f * acceleration.x * delta * delta;
     this->y += velocity.y * delta + 0.5f * acceleration.y * delta * delta;
 
-    sprite.setPosition(this->x, this->y);
+    sprite.setScale(-direction, sprite.getScale().y);
+    if (direction > 0)
+        sprite.setPosition(this->x + size * direction, this->y);
+    else
+        sprite.setPosition(this->x, this->y);
+
     //WARN: Collision shape is off-set, because of the sprite rendering of the ground (not a full block)
     collisionShape->setPosition({this->x, this->y - 20});
     if (groundCheck->getType() == BOX)
@@ -266,6 +308,7 @@ void Player::update(sf::RenderWindow& window, float delta) {
     if (groundCheck->getType() == CIRCLE)
         groundCheck->setPosition({this->x + size/2, this->y + size});
     acceleration = {0,0};
+
 }
 
 Player *Player::clone() {
@@ -320,3 +363,6 @@ void Player::calculateJumpParameters() {
     jumpGravity = (2 * jumpHeight * (jumpVelocity * jumpVelocity)) / (jumpDistance * jumpDistance);
 }
 
+void Player::AddAnimation(const Animation &animation) {
+    this->animations.push_back(animation);
+}

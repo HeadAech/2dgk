@@ -23,6 +23,7 @@ set(SOURCE_FILES src/main.cpp
         src/Signals.cpp
         src/GuideArrow.h
         src/Background.h
+        src/Animation.h
 )
 add_executable(main ${SOURCE_FILES})
 include_directories(/usr/local/include)

@@ -9,6 +9,7 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/WindowBase.hpp>
 
+#include "Animation.h"
 #include "CollisionShape.h"
 
 namespace sf {
@@ -20,6 +21,10 @@ enum InputMethod {
     KEYBOARD_IJKL,
     KEYBOARD_ARROWS,
     MOUSE
+};
+
+enum PlayerState {
+    IDLE, FLYING, FALLING
 };
 
 class Player {
@@ -42,7 +47,7 @@ class Player {
 
     int direction = -1;
 
-    int size = 60;
+    int size = 70;
 
     InputMethod inputMethod;
 
@@ -70,6 +75,10 @@ class Player {
     CollisionShape* collisionShape;
 
     CollisionShape* groundCheck;
+
+    std::vector<Animation> animations;
+
+    PlayerState currentAnimation = IDLE;
 
     Player();
 
@@ -116,6 +125,8 @@ class Player {
 
     void printInfo() const;
     void calculateJumpParameters();
+
+    void AddAnimation(const Animation& animation);
 };
 
 

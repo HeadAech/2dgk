@@ -29,6 +29,8 @@ int main() {
 
     sf::Texture arrowTexture;
 
+    sf::Texture spriteSheet;
+
 
     //loading textures
     if (!circleTexture.loadFromFile("data/img/circle.png"))
@@ -49,6 +51,11 @@ int main() {
         return 1;
     }
 
+    if (!spriteSheet.loadFromFile("data/textures/pairrots_spritesheet.png")) {
+        std::cout << "Failed to load texture" << std::endl;
+        return 1;
+    }
+
     sf::Color bgColor = sf::Color(3,78, 128);
 
     Player *player1 = new Player(0, KEYBOARD_WASD, 100, 100, dogTexture);
@@ -57,6 +64,48 @@ int main() {
     player1->setCollisionShape(BOX);
     player2->setCircleCollisionShape(player2->getSize()/2);
 
+    Animation pinkParrotAnimationIdle(&spriteSheet, &player1->sprite);
+    std::vector<sf::Vector2i> pinkParrotFramesIdle = {
+        {0,0},
+        {1,0}
+    };
+    pinkParrotAnimationIdle.SetFramePositions(pinkParrotFramesIdle);
+    pinkParrotAnimationIdle.SetDuration(1.0f);
+    pinkParrotAnimationIdle.SetPlayStyle(PS_LOOP);
+    pinkParrotAnimationIdle.Play();
+    player1->AddAnimation(pinkParrotAnimationIdle);
+
+    Animation pinkParrotAnimationFly(&spriteSheet, &player1->sprite);
+    std::vector<sf::Vector2i> pinkParrotFramesFly = {
+        {2,0},
+        {3,0},
+        {4,0},
+        {0, 1},
+        {1,1},
+        {2,1},
+        {3,1},
+    };
+    pinkParrotAnimationFly.SetFramePositions(pinkParrotFramesFly);
+    pinkParrotAnimationFly.SetDuration(0.04f);
+    pinkParrotAnimationFly.SetPlayStyle(PS_PINGPONG_REVERSE);
+    pinkParrotAnimationFly.Play();
+    player1->AddAnimation(pinkParrotAnimationFly);
+
+    Animation pinkParrotAnimationFall(&spriteSheet, &player1->sprite);
+    std::vector<sf::Vector2i> pinkParrotFramesFall = {
+        {2,0},
+        {3,0},
+        {4,0},
+        {0, 1},
+        {1,1},
+        {2,1},
+        {3,1},
+    };
+    pinkParrotAnimationFall.SetFramePositions(pinkParrotFramesFly);
+    pinkParrotAnimationFall.SetDuration(0.055f);
+    pinkParrotAnimationFall.SetPlayStyle(PS_NORMAL);
+    pinkParrotAnimationFall.Play();
+    player1->AddAnimation(pinkParrotAnimationFall);
 
     auto* guideArrow0 = new GuideArrow(&arrowTexture);
 
@@ -140,7 +189,7 @@ int main() {
     std::vector<Player*> players = {player1, player2};
 
     Background background(&camera);
-    background.AddLayer("data/img/background/back.png", 1.5f);
+    background.AddLayer("data/img/background/back.png", 1.0f);
     background.AddLayer("data/img/background/middle.png", 1.0f);
     // background.AddLayer("data/img/background/testing/front.png");
 
