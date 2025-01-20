@@ -306,6 +306,8 @@ class Physics {
                 //     break;
                 // }
                 // player->isOnFloor = false;
+                if (collisionShape->isTrigger())
+                    continue;
                 if (isCollidingWithBoxShape(player->groundCheck, collisionShape)) {
                     player->isOnFloor = true;
                     break;
@@ -341,6 +343,11 @@ class Physics {
                                     collisionShape->triggered = true;
                                     Signals::NextStage.emit(player->getId());
                                     return;
+                                }
+                                if (collisionShape->getTriggerType() == POINT) {
+                                    collisionShape->triggered = true;
+                                    Signals::IncreasePoint.emit();
+                                    Signals::DeleteBlock.emit(collisionShape);
                                 }
                             }
                         } else

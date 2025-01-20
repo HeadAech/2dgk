@@ -70,7 +70,7 @@ int main() {
         {1,0}
     };
     pinkParrotAnimationIdle.SetFramePositions(pinkParrotFramesIdle);
-    pinkParrotAnimationIdle.SetDuration(1.0f);
+    pinkParrotAnimationIdle.SetDuration(0.7f);
     pinkParrotAnimationIdle.SetPlayStyle(PS_LOOP);
     pinkParrotAnimationIdle.Play();
     player1->AddAnimation(pinkParrotAnimationIdle);
@@ -88,7 +88,6 @@ int main() {
     pinkParrotAnimationFly.SetFramePositions(pinkParrotFramesFly);
     pinkParrotAnimationFly.SetDuration(0.04f);
     pinkParrotAnimationFly.SetPlayStyle(PS_PINGPONG_REVERSE);
-    pinkParrotAnimationFly.Play();
     player1->AddAnimation(pinkParrotAnimationFly);
 
     Animation pinkParrotAnimationFall(&spriteSheet, &player1->sprite);
@@ -104,8 +103,17 @@ int main() {
     pinkParrotAnimationFall.SetFramePositions(pinkParrotFramesFly);
     pinkParrotAnimationFall.SetDuration(0.055f);
     pinkParrotAnimationFall.SetPlayStyle(PS_NORMAL);
-    pinkParrotAnimationFall.Play();
     player1->AddAnimation(pinkParrotAnimationFall);
+
+    Animation pinkParrotWalk(&spriteSheet, &player1->sprite);
+    std::vector<sf::Vector2i> pinkParrotFramesWalk = {
+        {2,4},
+        {3,4},
+    };
+    pinkParrotWalk.SetFramePositions(pinkParrotFramesWalk);
+    pinkParrotWalk.SetDuration(0.1f);
+    pinkParrotWalk.SetPlayStyle(PS_LOOP);
+    player1->AddAnimation(pinkParrotWalk);
 
     auto* guideArrow0 = new GuideArrow(&arrowTexture);
 
@@ -115,7 +123,7 @@ int main() {
     camera.setPlayerToFollow(player1);
     camera.setSecondPlayerToFollow(player2);
 
-    WorldGenerator* worldGenerator = new WorldGenerator("data/level/test1.txt", "data/level/blocks.txt");
+    WorldGenerator* worldGenerator = new WorldGenerator("data/level/test1.txt", "data/level/blocks.txt", &spriteSheet);
     worldGenerator->loadData();
     worldGenerator->generateWorld();
 
@@ -131,22 +139,6 @@ int main() {
     physics->addPlayer(player2);
 
     gameManager.setBlocksForPhysics();
-
-    // for (int i = 0; i < 20; i++) {
-    //     Circle* circle = new Circle(i, 20, worldGenerator.getBoundary());
-    //     circle->setRandomPosition();
-    //     circle->setRandomVelocity();
-    //     circle->setRandomColor();
-    //     physics->addCircle(circle);
-    // }
-
-    //testing
-    // Circle* c_0 = new Circle(1, sf::Vector2f(50, 70), 20, worldGenerator.getBoundary());
-    // c_0->setVelocity(2, 0);
-    // Circle* c_1 = new Circle(2, sf::Vector2f(250, 100), 20, worldGenerator.getBoundary());
-    // c_1->setVelocity(-2, 0);
-    // physics->addCircle(c_0);
-    // physics->addCircle(c_1);
 
     Circle* circle1 = new Circle(99, sf::Vector2f(worldGenerator->getBoundary().minX, worldGenerator->getBoundary().maxY), 10, worldGenerator->getBoundary());
     circle1->shape.setFillColor(sf::Color::Red);
@@ -171,9 +163,9 @@ int main() {
     });
     b_toggleCircles->setToggled(true);
 
+
+
     Interface* interface = new Interface(&font);
-    interface->addButton(b_toggleSeparation);
-    interface->addButton(b_toggleCircles);
 
     Signals::SetPositionForPlayerId.emit(0, gameManager.getPlayer1SpawnPos());
     Signals::SetPositionForPlayerId.emit(1, gameManager.getPlayer2SpawnPos());
@@ -183,16 +175,139 @@ int main() {
     t->setPosition({100, 100});
     t->setFillColor(sf::Color::Black);
 
-    // interface->setClock(&clock);
+    interface->setClock(&clock);
     // sf::Vector2f target = worldGenerator->trapdoorPosition;
 
     std::vector<Player*> players = {player1, player2};
 
-    Background background(&camera);
-    background.AddLayer("data/img/background/back.png", 1.0f);
-    background.AddLayer("data/img/background/middle.png", 1.0f);
-    // background.AddLayer("data/img/background/testing/front.png");
+    Background* background = new Background(&camera);
+    background->AddLayer("data/img/background/back.png", 1.0f);
+    background->AddLayer("data/img/background/middle.png", 1.0f);
+    background->AddLayer("data/img/background/middle2.png", 1.0f);
 
+    //Layer 1 controls
+
+    Button* b_layer1IncreaseSpeed = new Button(ONE_SHOT, 100, 40, 40, 40, "+", font, [background, interface]() {
+        background->IncreaseLayerSpeed(0);
+        interface->setTextValue(0, background->GetScrollSpeed(0));
+    });
+    interface->addButton(b_layer1IncreaseSpeed);
+
+    Button* b_layer1DecreaseSpeed = new Button(ONE_SHOT, 150, 40, 40, 40, "-", font, [background, interface]() {
+        background->DecreaseLayerSpeed(0);
+        interface->setTextValue(0, background->GetScrollSpeed(0));
+    });
+    interface->addButton(b_layer1DecreaseSpeed);
+
+    sf::Text layer1Text("Layer 1", font, 16);
+    Text layer1TextObj;
+    layer1TextObj.text = layer1Text;
+    layer1TextObj.relativePosition = sf::Vector2f(20, 20);
+    interface->addText(&layer1TextObj);
+    sf::Text layer1Value(Util::toStringWithTwoDecimalPlaces(background->GetScrollSpeed(0)), font, 16);
+    Text layer1textValue;
+    layer1textValue.text = layer1Value;
+    layer1textValue.relativePosition = sf::Vector2f(20, 40);
+    interface->addTextValue(&layer1textValue);
+
+
+    //Layer 2 controls
+
+    Button* b_layer2IncreaseSpeed = new Button(ONE_SHOT, 100, 90, 40, 40, "+", font, [background, interface]() {
+    background->IncreaseLayerSpeed(1);
+    interface->setTextValue(1, background->GetScrollSpeed(1));
+    });
+    interface->addButton(b_layer2IncreaseSpeed);
+
+    Button* b_layer2DecreaseSpeed = new Button(ONE_SHOT, 150, 90, 40, 40, "-", font, [background, interface]() {
+        background->DecreaseLayerSpeed(1);
+        interface->setTextValue(1, background->GetScrollSpeed(1));
+    });
+    interface->addButton(b_layer2DecreaseSpeed);
+
+    sf::Text layer2Text("Layer 2", font, 16);
+    Text layer2TextObj;
+    layer2TextObj.text = layer2Text;
+    layer2TextObj.relativePosition = sf::Vector2f(20, 70);
+    interface->addText(&layer2TextObj);
+    sf::Text layer2Value(Util::toStringWithTwoDecimalPlaces(background->GetScrollSpeed(1)), font, 16);
+    Text layer2textValue;
+    layer2textValue.text = layer2Value;
+    layer2textValue.relativePosition = sf::Vector2f(20, 90);
+    interface->addTextValue(&layer2textValue);
+
+    //Layer 3 controls
+    Button* b_layer3IncreaseSpeed = new Button(ONE_SHOT, 100, 140, 40, 40, "+", font, [background, interface]() {
+    background->IncreaseLayerSpeed(2);
+    interface->setTextValue(2, background->GetScrollSpeed(2));
+    });
+    interface->addButton(b_layer3IncreaseSpeed);
+
+    Button* b_layer3DecreaseSpeed = new Button(ONE_SHOT, 150, 140, 40, 40, "-", font, [background, interface]() {
+        background->DecreaseLayerSpeed(2);
+        interface->setTextValue(2, background->GetScrollSpeed(2));
+    });
+    interface->addButton(b_layer3DecreaseSpeed);
+
+    sf::Text layer3Text("Layer 3", font, 16);
+    Text layer3TextObj;
+    layer3TextObj.text = layer3Text;
+    layer3TextObj.relativePosition = sf::Vector2f(20, 120);
+    interface->addText(&layer3TextObj);
+    sf::Text layer3Value(Util::toStringWithTwoDecimalPlaces(background->GetScrollSpeed(2)), font, 16);
+    Text layer3textValue;
+    layer3textValue.text = layer3Value;
+    layer3textValue.relativePosition = sf::Vector2f(20, 140);
+    interface->addTextValue(&layer3textValue);
+
+    //Background controls
+    Button* b_backgroundIncreaseSpeed = new Button(ONE_SHOT, 100, 190, 40, 40, "+", font, [background, interface]() {
+    background->IncreaseScrollSpeed();
+    interface->setTextValue(3, background->GetScrollSpeed());
+    });
+    interface->addButton(b_backgroundIncreaseSpeed);
+
+    Button* b_backgroundDecreaseSpeed = new Button(ONE_SHOT, 150, 190, 40, 40, "-", font, [background, interface]() {
+        background->DecreaseScrollSpeed();
+        interface->setTextValue(3, background->GetScrollSpeed());
+    });
+    interface->addButton(b_backgroundDecreaseSpeed);
+
+    sf::Text backgroundSpeedText("BG speed", font, 16);
+    Text backgroundSpeedTextObj;
+    backgroundSpeedTextObj.text = backgroundSpeedText;
+    backgroundSpeedTextObj.relativePosition = sf::Vector2f(20, 170);
+    interface->addText(&backgroundSpeedTextObj);
+    sf::Text backgroundSpeedValue(Util::toStringWithTwoDecimalPlaces(background->GetScrollSpeed()), font, 16);
+    Text backgroundSpeedtextValue;
+    backgroundSpeedtextValue.text = backgroundSpeedValue;
+    backgroundSpeedtextValue.relativePosition = sf::Vector2f(20, 190);
+    interface->addTextValue(&backgroundSpeedtextValue);
+
+    //points
+    sf::Text pointsText("Feathers:", font, 20);
+    Text pointsTextObj;
+    pointsTextObj.text = pointsText;
+    pointsTextObj.relativePosition = sf::Vector2f(camera.getView().getSize().x - 190, 20);
+    interface->addText(&pointsTextObj);
+    sf::Text pointsValue("0", font, 20);
+    Text pointsValueText;
+    pointsValueText.text = pointsValue;
+    pointsValueText.relativePosition = sf::Vector2f(camera.getView().getSize().x - 85, 20);
+    interface->addTextValue(&pointsValueText);
+
+    sf::Text slashText("/", font, 20);
+    Text slashTextObj;
+    slashTextObj.text = slashText;
+    slashTextObj.relativePosition = sf::Vector2f(camera.getView().getSize().x - 55, 20);
+    interface->addText(&slashTextObj);
+    sf::Text maxPointsValue("0", font, 20);
+    Text maxPointsValueText;
+    maxPointsValueText.text = maxPointsValue;
+    maxPointsValueText.relativePosition = sf::Vector2f(camera.getView().getSize().x - 30, 20);
+    interface->addTextValue(&maxPointsValueText);
+
+    Signals::SetMaxPoints.emit(gameManager.maxPoints);
     float delta = 0.0f;
     while (window.isOpen())
     {
@@ -218,7 +333,7 @@ int main() {
         int views = camera.isSplit() ? 2 : 1;
 
         camera.update(window);
-        background.Update(delta, window);
+        background->Update(delta, window);
 
 
         //update players
@@ -244,14 +359,19 @@ int main() {
             b->handleEvent(event, window);
             b->updatePosition(camera.getView());
         }
-        interface->updatePosition(camera.getView(), window);
+        for (auto* text: interface->texts) {
+            interface->updatePosition(camera.getView(), text);
+        }
+        for (auto* text: interface->textValues) {
+            interface->updatePosition(camera.getView(), text);
+        }
         guideArrow0->update({player1->getCenterX(), player1->getCenterY()}, worldGenerator->trapdoorPosition);
         // guideArrow1->update({player2->getCenterX(), player2->getCenterY()}, worldGenerator->trapdoorPosition);
 
 
         for (int i = 0; i < views; i++) {
 
-            background.Draw(window);
+            background->Draw(window);
 
             if (camera.isSplit()) {
                 window.setView(i == 0 ? camera.getSplitViewLeft() : camera.getSplitViewRight());

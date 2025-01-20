@@ -14,9 +14,12 @@
 #include "Block.h"
 #include "Signals.h"
 
-WorldGenerator::WorldGenerator(std::string mapLayoutPath, std::string blocksPath) {
+WorldGenerator::WorldGenerator(std::string mapLayoutPath, std::string blocksPath, sf::Texture* spriteSheet) {
     this->mapLayoutPath = mapLayoutPath;
     this->blocksPath = blocksPath;
+    this->spriteSheet = spriteSheet;
+
+    Signals::DeleteBlock.connect([this](CollisionShape* shape) {DeleteBlock(shape);});
 }
 
 WorldGenerator::~WorldGenerator() {
@@ -44,14 +47,27 @@ void WorldGenerator::getBlocksData() {
         i++;
         if (i == 6) {
             i = 0;
-            BlockData data(block[0], block[1], std::stof( block[2]), std::stof(block[3]), block[4], block[5] == "true");
+            // Find the position of the comma
+            size_t delimiterPos = block[4].find(',');
+            std::string part1;
+            std::string part2;
+            // Check if the delimiter exists in the string
+            if (delimiterPos != std::string::npos) {
+                // Split the string into two parts
+                part1 = block[4].substr(0, delimiterPos);  // From the start to the comma
+                part2 = block[4].substr(delimiterPos + 1);  // From the comma to the end
+
+            } else {
+                std::cout << "No delimiter found!" << std::endl;
+            }
+            BlockData data(block[0], block[1], std::stof( block[2]), std::stof(block[3]), {std::stoi(part1), std::stoi(part2)}, block[5] == "true");
             blocksData.push_back(data);
             block.clear();
         }
     }
 
     for (unsigned int i = 0; i < blocksData.size(); i++) {
-        this->texturesData.insert(std::make_pair(blocksData[i].character, texturesFolderPath + blocksData[i].texturePath));
+        this->textures.insert(std::make_pair(blocksData[i].character, blocksData[i].textureCoords));
     }
 
     blocksFile.close();
@@ -70,21 +86,26 @@ void WorldGenerator::createBlock(std::string line, int lineIndex) {
     int charIndex = 0;
     for(char& c : line) {
         std::string symbol(1, c);
-        sf::Texture *texture = this->textures[symbol];
+        // sf::Texture *texture = this->textures[symbol];
+        sf::Vector2i textureCoords = this->textures[symbol];
 
         BlockData data = getDataForChar(symbol);
 
         // float size = data.sizeX;
+        if (data.name == "air") {
+            charIndex++;
+            continue;
+        }
 
         float size = 70;
         // sf::RectangleShape block;
         // block.setSize(sf::Vector2f(size, size));
         // block.setPosition(size * charIndex, size * lineIndex);
 
-        Block block(data.name == "trapdoor" ? this->textures["."] : texture);
+        Block block(data.name == "trapdoor" ? this->textures["."] : textureCoords, spriteSheet);
         block.setSize(size, size);
         block.setTextureSize(data.sizeX, data.sizeY);
-        block.setPosition(size * charIndex, size * lineIndex);
+        block.setPosition(std::round(size * charIndex), std::round(size * lineIndex));
         block.setCollidable(data.name == "trapdoor" ? false : data.collidable);
         block.setName(data.name);
         if (data.collidable) {
@@ -111,24 +132,24 @@ void WorldGenerator::createBlock(std::string line, int lineIndex) {
     }
 }
 
-void WorldGenerator::loadTextures() {
-    for (const auto& pair : texturesData) {
-        std::string symbol = pair.first;
-        std::string texturePath = pair.second;
-
-        sf::Texture *texture = new sf::Texture();
-        if (!texture->loadFromFile(texturePath)) {
-            std::cout << "Failed to load texture: " <<  texturePath << std::endl;
-            continue;
-        }
-
-        textures[symbol] = texture;
-    }
-}
+// void WorldGenerator::loadTextures() {
+//     for (const auto& pair : texturesData) {
+//         std::string symbol = pair.first;
+//         std::string texturePath = pair.second;
+//
+//         // sf::Texture *texture = new sf::Texture();
+//         // if (!texture->loadFromFile(texturePath)) {
+//         //     std::cout << "Failed to load texture: " <<  texturePath << std::endl;
+//         //     continue;
+//         // }
+//
+//         textures[symbol] = texture;
+//     }
+// }
 
 void WorldGenerator::loadData() {
     this->getBlocksData();
-    this->loadTextures();
+    // this->loadTextures();
 }
 
 void WorldGenerator::generateWorld() {
@@ -148,6 +169,7 @@ void WorldGenerator::generateWorld() {
     std::vector<int> spawnPoints0;
     std::vector<int> spawnPoints1;
     std::vector<int> trapdoorPos;
+    std::vector<int> points = {};
 
     for(int i = 0; i < blocks.size(); i++) {
         if (blocks[i].getName() == "trapdoor")
@@ -156,7 +178,18 @@ void WorldGenerator::generateWorld() {
             spawnPoints0.push_back(i);
         if (blocks[i].getName() == "spawnpoint1")
             spawnPoints1.push_back(i);
+        if (blocks[i].getName() == "pink_feather") {
+            points.push_back(i);
+        }
     }
+
+    for (auto point : points) {
+        blocks[point].setCollidable(true);
+        blocks[point].createCollisionShape();
+        blocks[point].setTriggerOnCollisionShape(POINT);
+    }
+
+    Signals::SetMaxPoints.emit(points.size());
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -224,4 +257,12 @@ BlockData WorldGenerator::getDataForChar(std::string c) {
 
 void WorldGenerator::setMapLayoutPath(std::string mapLayoutPath) {
     this->mapLayoutPath = mapLayoutPath;
+}
+
+void WorldGenerator::DeleteBlock(CollisionShape *shape) {
+    for (int i = 0; i < blocks.size(); i++) {
+        if (blocks[i].collisionShape == shape) {
+            blocks.erase(blocks.begin() + i);
+        }
+    }
 }

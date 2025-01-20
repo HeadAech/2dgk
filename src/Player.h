@@ -24,7 +24,7 @@ enum InputMethod {
 };
 
 enum PlayerState {
-    IDLE, FLYING, FALLING
+    IDLE, FLYING, FALLING, WALKING
 };
 
 class Player {
@@ -47,7 +47,7 @@ class Player {
 
     int direction = -1;
 
-    int size = 70;
+    int size = 60;
 
     InputMethod inputMethod;
 

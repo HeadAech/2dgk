@@ -224,8 +224,17 @@ void Player::input(sf::Event &event) {
 
 
 void Player::update(sf::RenderWindow& window, float delta) {
-
-    if (isOnFloor) {
+    if (isOnFloor && std::abs(velocity.x) > 20.0f) {
+        if (currentAnimation == IDLE) {
+            animations[currentAnimation].Stop();
+        }
+        if (currentAnimation != WALKING) {
+            currentAnimation = WALKING;
+            if (!animations[currentAnimation].IsPlaying())
+                animations[currentAnimation].Play();
+        }
+    }
+    if (isOnFloor && std::abs(velocity.x) < 20.0f) {
         if (currentAnimation == FLYING) {
             animations[currentAnimation].Stop();
         }
@@ -255,8 +264,6 @@ void Player::update(sf::RenderWindow& window, float delta) {
                 animations[currentAnimation].Play();
         }
     }
-
-    std::cout << velocity.y << std::endl;
 
     if (!animations.empty()) {
         animations[currentAnimation].Update(delta);

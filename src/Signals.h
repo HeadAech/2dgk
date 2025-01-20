@@ -21,6 +21,12 @@ public:
     static Signal<std::string> ShowMessage;
 
     static Signal<WorldBoundary> SetBoundary;
+
+    static Signal<> IncreasePoint;
+    static Signal<int> UpdatePoints;
+    static Signal<int> SetMaxPoints;
+
+    static Signal<CollisionShape*> DeleteBlock;
 };
 
 #endif //SIGNALS_H

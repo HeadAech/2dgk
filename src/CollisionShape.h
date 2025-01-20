@@ -15,7 +15,8 @@ enum TriggerType {
     NEXT_STAGE,
     PREVIOUS_STAGE,
     GAME_OVER,
-    EMPTY
+    EMPTY,
+    POINT
 };
 
 class CollisionShape {

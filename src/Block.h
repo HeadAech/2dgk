@@ -15,15 +15,25 @@ struct BlockData {
     std::string character;
     float sizeX;
     float sizeY;
-    std::string texturePath;
+    // std::string texturePath;
+    sf::Vector2i textureCoords;
     bool collidable;
 
-    BlockData(std::string name, std::string character, float sizeX, float sizeY, std::string texturePath, bool collidable) {
+    // BlockData(std::string name, std::string character, float sizeX, float sizeY, std::string texturePath, bool collidable) {
+    //     this->name = name;
+    //     this->character = character;
+    //     this->sizeX = sizeX;
+    //     this->sizeY = sizeY;
+    //     this->texturePath = texturePath;
+    //     this->collidable = collidable;
+    // }
+
+    BlockData(std::string name, std::string character, float sizeX, float sizeY, sf::Vector2i textureCoords, bool collidable) {
         this->name = name;
         this->character = character;
         this->sizeX = sizeX;
         this->sizeY = sizeY;
-        this->texturePath = texturePath;
+        this->textureCoords = textureCoords;
         this->collidable = collidable;
     }
 };
@@ -31,7 +41,9 @@ struct BlockData {
 class Block {
 private:
     std::string name;
-    sf::Texture* texture;
+
+    sf::Vector2i textureCoords;
+    sf::Vector2i frameSize = {32, 32};
 
     public:
     bool collidable = true;
@@ -42,9 +54,9 @@ private:
 
     CollisionShape* collisionShape;
 
-    Block(sf::Texture* texture) {
-        this->texture = texture;
-        shape.setTexture(texture);
+    Block(sf::Vector2i textureCoords, sf::Texture* spriteSheet) {
+        shape.setTexture(spriteSheet);
+        setTexture(textureCoords);
     }
 
     void setSize(float sizeX, float sizeY) {
@@ -60,7 +72,6 @@ private:
     }
 
     void setTexture(sf::Texture* texture) {
-        this->texture = texture;
         shape.setTexture(texture);
     }
 
@@ -70,6 +81,11 @@ private:
 
     void setCollidable(bool v) {
         this->collidable = v;
+    }
+
+    void setTexture(sf::Vector2i textureCoords) {
+        this->textureCoords = textureCoords;
+        shape.setTextureRect(sf::IntRect(textureCoords.x * frameSize.x + 1, textureCoords.y * frameSize.y + 1, frameSize.x - 1 , frameSize.y - 1));
     }
 
     // void setSize(float x, float y) {

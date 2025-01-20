@@ -24,6 +24,7 @@ set(SOURCE_FILES src/main.cpp
         src/GuideArrow.h
         src/Background.h
         src/Animation.h
+        src/Util.h
 )
 add_executable(main ${SOURCE_FILES})
 include_directories(/usr/local/include)

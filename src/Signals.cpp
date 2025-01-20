@@ -16,3 +16,11 @@ Signal<std::string> Signals::ShowMessage;
 
 //camera
 Signal<WorldBoundary> Signals::SetBoundary;
+
+//points
+Signal<> Signals::IncreasePoint;
+Signal<int> Signals::UpdatePoints;
+Signal<int> Signals::SetMaxPoints;
+
+//delete __block
+Signal<CollisionShape*> Signals::DeleteBlock;

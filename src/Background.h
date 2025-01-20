@@ -86,6 +86,30 @@ public:
             window.draw(layer.sprite);
         }
     }
+
+    void IncreaseLayerSpeed(int i) {
+        layers.at(i).speed += 0.1f;
+    }
+
+    void DecreaseLayerSpeed(int i) {
+        layers.at(i).speed -= 0.1f;
+    }
+
+    float GetScrollSpeed(int i) {
+        return layers.at(i).speed;
+    }
+
+    void IncreaseScrollSpeed() {
+        scrollSpeed += 0.1f;
+    }
+
+    void DecreaseScrollSpeed() {
+        scrollSpeed -= 0.1f;
+    }
+
+    float GetScrollSpeed() {
+        return scrollSpeed;
+    }
 };
 
 #endif //BACKGROUND_H

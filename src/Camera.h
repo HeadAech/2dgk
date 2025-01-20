@@ -33,7 +33,7 @@ private:
 
     float currentSplit = 0.0f;
 
-    bool snapToEdges = false;
+    bool snapToEdges = true;
 
     int maxZoom = 3;
     int currentZoom = 0;

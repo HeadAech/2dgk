@@ -51,7 +51,9 @@ private:
 
     void createBlock(std::string line, int lineIndex);
 
-    std::map<std::string, sf::Texture*> textures;
+    sf::Texture* spriteSheet = nullptr;
+
+    std::map<std::string, sf::Vector2i> textures;
 
     std::vector<BlockData> blocksData;
     std::map<std::string, std::string> texturesData;
@@ -66,7 +68,7 @@ public:
 
     sf::Vector2f trapdoorPosition;
 
-    WorldGenerator(std::string mapLayoutPath, std::string blocksPath);
+    WorldGenerator(std::string mapLayoutPath, std::string blocksPath, sf::Texture* spriteSheet);
     ~WorldGenerator();
 
     void generateWorld();
@@ -81,6 +83,8 @@ public:
     WorldBoundary getBoundary();
 
     void setMapLayoutPath(std::string mapLayoutPath);
+
+    void DeleteBlock(CollisionShape* shape);
 };
 
 

@@ -25,11 +25,26 @@ private:
 
     std::map<int, int> stats;
 
+
+
     public:
+    int points = 0;
+    int maxPoints = 0;
 
     GameManager() {
         Signals::NextStage.connect([this] (int playerId) {this->onNextStage(playerId);});
         Signals::SetSpawnPoint.connect([this] (int num, sf::Vector2f pos) {this->onSetSpawnPoint(num, pos);});
+        Signals::IncreasePoint.connect([this] () {this->onIncreasePoint();});
+        Signals::SetMaxPoints.connect([this] (int val) {this->onSetMaxPoints(val);});
+    }
+
+    void onSetMaxPoints(int val) {
+        maxPoints = val;
+    }
+
+    void onIncreasePoint() {
+        points++;
+        Signals::UpdatePoints.emit(points);
     }
 
     void setWorldGenerator(WorldGenerator* w) {
