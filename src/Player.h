@@ -54,11 +54,11 @@ class Player {
     bool isOnFloor = false;
 
     //jumping parameters
-    float jumpHeight = 100.0f;  // maximum height in pixels
+    float jumpHeight = 140.0f;  // maximum height in pixels
     float jumpTimeToPeak = 0.5f;  // time to reach peak in seconds
     float jumpTimeToDescent = 0.4f;  // time to fall in seconds
 
-    float jumpDistance = 200.0f;
+    float jumpDistance = 150.0f;
     float jumpVelocity = jumpDistance / jumpTimeToPeak;
 
     // Calculated physics values
@@ -89,6 +89,9 @@ class Player {
     float getY();
     InputMethod getInputMethod();
     sf::Vector2f getVelocity();
+
+    int currentJumpCount = 0;
+    int maxJumpCount = 3;
 
     sf::Vector2f getPosition();
 

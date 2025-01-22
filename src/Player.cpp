@@ -77,10 +77,12 @@ void Player::oneShotInput(sf::Event &event) {
             if (event.key.code == sf::Keyboard::Space) {
                 if (isOnFloor) {
                     this->jump();
+                    currentJumpCount++;
                 } else {
-                    if (canDoubleJump) {
+                    if (currentJumpCount < maxJumpCount) {
                         this->jump();
                         canDoubleJump = false;
+                        currentJumpCount++;
                     }
                 }
             }
@@ -293,8 +295,9 @@ void Player::update(sf::RenderWindow& window, float delta) {
         velocity.y = 0;
     }
 
-    if (isOnFloor && canDoubleJump == false) {
+    if (isOnFloor && currentJumpCount == maxJumpCount) {
         canDoubleJump = true;
+        currentJumpCount = 0;
     }
 
     velocity.y = std::clamp(velocity.y, -2000.0f, 2000.0f);
