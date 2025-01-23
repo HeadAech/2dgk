@@ -81,7 +81,7 @@ void Player::oneShotInput(sf::Event &event) {
                 } else {
                     if (currentJumpCount < maxJumpCount) {
                         this->jump();
-                        canDoubleJump = false;
+                        // canDoubleJump = false;
                         currentJumpCount++;
                     }
                 }
@@ -295,7 +295,7 @@ void Player::update(sf::RenderWindow& window, float delta) {
         velocity.y = 0;
     }
 
-    if (isOnFloor && currentJumpCount == maxJumpCount) {
+    if (isOnFloor && currentJumpCount != 1) {
         canDoubleJump = true;
         currentJumpCount = 0;
     }

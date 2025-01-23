@@ -34,7 +34,7 @@ class Player {
     const float slowRate = 0.80f;
 
     const float maxSpeed = 400.5f;
-    const float speed = 400.5f;
+    const float speed = 300.5f;
 
     public:
 
