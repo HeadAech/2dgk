@@ -145,6 +145,13 @@ cloud_right
 7,7
 false
 
+small_cloud
+0
+70
+70
+8,7
+false
+
 big_cloud_left
 j
 70
