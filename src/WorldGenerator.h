@@ -41,7 +41,8 @@ struct WorldBoundary {
 
 class WorldGenerator {
 
-private:
+public:
+
     WorldBoundary boundary;
 
     std::string mapLayoutPath;
@@ -63,7 +64,6 @@ private:
 
     void updateBoundary(float x, float y);
 
-public:
     std::vector <Block> blocks;
 
     sf::Vector2f trapdoorPosition;

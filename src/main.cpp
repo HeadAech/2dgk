@@ -180,10 +180,22 @@ int main() {
 
     std::vector<Player*> players = {player1, player2};
 
+    //merge textures
+
+
     Background* background = new Background(&camera);
+    background->SetWorldGenerator(worldGenerator);
+
     background->AddLayer("data/img/background/back.png", 1.0f);
-    background->AddLayer("data/img/background/middle.png", 1.0f);
-    background->AddLayer("data/img/background/middle2.png", 1.0f);
+
+    background->ReadBackgroundFile("data/img/background/clouds2.txt", 0);
+    background->AddLayerFromBlockLayout(0, {255,255,255}, 1.3f, false);
+
+    background->ReadBackgroundFile("data/img/background/clouds.txt", 1.0f);
+    background->AddLayerFromBlockLayout(1, {255, 255, 255}, 1.2f, false);
+
+    background->ReadBackgroundFile("data/img/background/front.txt", 2);
+    background->AddLayerFromBlockLayout(2, {128, 128, 128}, 1.4f, true);
 
     //Layer 1 controls
 
