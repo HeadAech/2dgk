@@ -106,7 +106,7 @@ public:
 
     void AddLayerFromBlockLayout(int layerIdx, sf::Vector3f tint, float scale = 1.0f, bool lockY = false) {
         sf::RenderTexture renderTexture;
-        renderTexture.create(1400, 1400);
+        renderTexture.create(1400, 5500);
         renderTexture.clear(sf::Color::Transparent);
         for (Block block : backgroundBlocks[layerIdx]) {
             block.shape.setFillColor(sf::Color(tint.x, tint.y, tint.z));

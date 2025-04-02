@@ -189,25 +189,25 @@ int main() {
     background->AddLayer("data/img/background/back.png", 1.0f);
 
     background->ReadBackgroundFile("data/img/background/clouds2.txt", 0);
-    background->AddLayerFromBlockLayout(0, {230,230,230}, 1.3f, false);
+    background->AddLayerFromBlockLayout(0, {230,230,230}, 1.0f, false);
 
     background->ReadBackgroundFile("data/img/background/clouds.txt", 1.0f);
-    background->AddLayerFromBlockLayout(1, {255, 255, 255}, 1.2f, false);
+    background->AddLayerFromBlockLayout(1, {255, 255, 255}, 1.0f, false);
 
     background->ReadBackgroundFile("data/img/background/front.txt", 2);
-    background->AddLayerFromBlockLayout(2, {128, 128, 128}, 1.4f, true);
+    background->AddLayerFromBlockLayout(2, {128, 128, 128}, 1.1f, true);
 
     //Layer 1 controls
 
     Button* b_layer1IncreaseSpeed = new Button(ONE_SHOT, 100, 40, 40, 40, "+", font, [background, interface]() {
-        background->IncreaseLayerSpeed(0);
-        interface->setTextValue(0, background->GetScrollSpeed(0));
+        background->IncreaseLayerSpeed(1);
+        interface->setTextValue(0, background->GetScrollSpeed(1));
     });
     interface->addButton(b_layer1IncreaseSpeed);
 
     Button* b_layer1DecreaseSpeed = new Button(ONE_SHOT, 150, 40, 40, 40, "-", font, [background, interface]() {
-        background->DecreaseLayerSpeed(0);
-        interface->setTextValue(0, background->GetScrollSpeed(0));
+        background->DecreaseLayerSpeed(1);
+        interface->setTextValue(0, background->GetScrollSpeed(1));
     });
     interface->addButton(b_layer1DecreaseSpeed);
 
@@ -216,7 +216,7 @@ int main() {
     layer1TextObj.text = layer1Text;
     layer1TextObj.relativePosition = sf::Vector2f(20, 20);
     interface->addText(&layer1TextObj);
-    sf::Text layer1Value(Util::toStringWithTwoDecimalPlaces(background->GetScrollSpeed(0)), font, 16);
+    sf::Text layer1Value(Util::toStringWithTwoDecimalPlaces(background->GetScrollSpeed(1)), font, 16);
     Text layer1textValue;
     layer1textValue.text = layer1Value;
     layer1textValue.relativePosition = sf::Vector2f(20, 40);
@@ -226,14 +226,14 @@ int main() {
     //Layer 2 controls
 
     Button* b_layer2IncreaseSpeed = new Button(ONE_SHOT, 100, 90, 40, 40, "+", font, [background, interface]() {
-    background->IncreaseLayerSpeed(1);
-    interface->setTextValue(1, background->GetScrollSpeed(1));
+    background->IncreaseLayerSpeed(2);
+    interface->setTextValue(1, background->GetScrollSpeed(2));
     });
     interface->addButton(b_layer2IncreaseSpeed);
 
     Button* b_layer2DecreaseSpeed = new Button(ONE_SHOT, 150, 90, 40, 40, "-", font, [background, interface]() {
-        background->DecreaseLayerSpeed(1);
-        interface->setTextValue(1, background->GetScrollSpeed(1));
+        background->DecreaseLayerSpeed(2);
+        interface->setTextValue(1, background->GetScrollSpeed(2));
     });
     interface->addButton(b_layer2DecreaseSpeed);
 
@@ -242,7 +242,7 @@ int main() {
     layer2TextObj.text = layer2Text;
     layer2TextObj.relativePosition = sf::Vector2f(20, 70);
     interface->addText(&layer2TextObj);
-    sf::Text layer2Value(Util::toStringWithTwoDecimalPlaces(background->GetScrollSpeed(1)), font, 16);
+    sf::Text layer2Value(Util::toStringWithTwoDecimalPlaces(background->GetScrollSpeed(2)), font, 16);
     Text layer2textValue;
     layer2textValue.text = layer2Value;
     layer2textValue.relativePosition = sf::Vector2f(20, 90);
@@ -250,14 +250,14 @@ int main() {
 
     //Layer 3 controls
     Button* b_layer3IncreaseSpeed = new Button(ONE_SHOT, 100, 140, 40, 40, "+", font, [background, interface]() {
-    background->IncreaseLayerSpeed(2);
-    interface->setTextValue(2, background->GetScrollSpeed(2));
+    background->IncreaseLayerSpeed(3);
+    interface->setTextValue(2, background->GetScrollSpeed(3));
     });
     interface->addButton(b_layer3IncreaseSpeed);
 
     Button* b_layer3DecreaseSpeed = new Button(ONE_SHOT, 150, 140, 40, 40, "-", font, [background, interface]() {
-        background->DecreaseLayerSpeed(2);
-        interface->setTextValue(2, background->GetScrollSpeed(2));
+        background->DecreaseLayerSpeed(3);
+        interface->setTextValue(2, background->GetScrollSpeed(3));
     });
     interface->addButton(b_layer3DecreaseSpeed);
 
@@ -266,7 +266,7 @@ int main() {
     layer3TextObj.text = layer3Text;
     layer3TextObj.relativePosition = sf::Vector2f(20, 120);
     interface->addText(&layer3TextObj);
-    sf::Text layer3Value(Util::toStringWithTwoDecimalPlaces(background->GetScrollSpeed(2)), font, 16);
+    sf::Text layer3Value(Util::toStringWithTwoDecimalPlaces(background->GetScrollSpeed(3)), font, 16);
     Text layer3textValue;
     layer3textValue.text = layer3Value;
     layer3textValue.relativePosition = sf::Vector2f(20, 140);

@@ -106,7 +106,7 @@ false
 sign
 ?
 70
-70
+90
 1,11
 false
 
@@ -119,8 +119,8 @@ false
 
 pink_feather
 ]
-70
-70
+50
+50
 0,11
 false
 
@@ -129,4 +129,46 @@ _
 70
 70
 1,10
+false
+
+cloud_left
+{
+70
+70
+6,7
+false
+
+cloud_right
+}
+70
+70
+7,7
+false
+
+small_cloud
+0
+70
+70
+8,7
+false
+
+big_cloud_left
+j
+70
+70
+3,7
+false
+
+big_cloud_middle
+k
+70
+70
+4,7
+false
+
+big_cloud_right
+l
+70
+70
+5,7
 false
